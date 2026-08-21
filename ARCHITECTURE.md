@@ -1,8 +1,9 @@
 # AxisOneDesk — Architecture & Source of Truth (SOT)
 
-Status: **DRAFT — awaiting approval**
+Status: **Approved**
 Version: 0.1.0
-Owner: lifeofcuba
+Client: ************
+Developer:Aderemy- CubaDev
 Last updated: 2026-08-21
 
 This document is the single source of truth for AxisOneDesk. No implementation code is written until this document is approved. Once approved, any deviation from this document during implementation requires updating this document first (SOT-first workflow) — the code follows the doc, not the other way around.

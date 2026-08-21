@@ -23,7 +23,7 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "Inventory", href: "/inventory", icon: Boxes, comingSoon: true },
+  { label: "Inventory", href: "/inventory", icon: Boxes },
   { label: "Orders", href: "/orders", icon: ClipboardList, comingSoon: true },
   { label: "Bookings", href: "/bookings", icon: CalendarClock, comingSoon: true },
   { label: "CRM", href: "/crm", icon: Users, comingSoon: true },

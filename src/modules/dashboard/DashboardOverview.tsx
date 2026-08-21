@@ -1,6 +1,6 @@
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { Button } from "@/shared/components/ui/button";
-import { KpiCard } from "@/modules/dashboard/components/KpiCard";
+import { KpiCard } from "@/shared/components/data/KpiCard";
 import { RevenueChart } from "@/modules/dashboard/components/RevenueChart";
 import { RecentOrdersTable } from "@/modules/dashboard/components/RecentOrdersTable";
 import { LowStockPanel } from "@/modules/dashboard/components/LowStockPanel";

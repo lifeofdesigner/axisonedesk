@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { RequireAuth, RedirectIfAuthed } from "@/core/auth/RequireAuth";
 import { AppShell } from "@/shared/components/layout/AppShell";
+import { InventoryLayout } from "@/modules/inventory/InventoryLayout";
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,35 @@ export const router = createBrowserRouter([
           {
             path: "/",
             lazy: () => import("@/pages/DashboardPage"),
+          },
+          {
+            element: <InventoryLayout />,
+            children: [
+              {
+                path: "/inventory",
+                lazy: () => import("@/pages/InventoryOverviewPage"),
+              },
+              {
+                path: "/inventory/products",
+                lazy: () => import("@/pages/InventoryProductsPage"),
+              },
+              {
+                path: "/inventory/categories",
+                lazy: () => import("@/pages/InventoryCategoriesPage"),
+              },
+              {
+                path: "/inventory/adjustments",
+                lazy: () => import("@/pages/InventoryAdjustmentsPage"),
+              },
+            ],
+          },
+          {
+            path: "/inventory/products/new",
+            lazy: () => import("@/pages/InventoryAddProductPage"),
+          },
+          {
+            path: "/inventory/products/:productId",
+            lazy: () => import("@/pages/InventoryProductDetailPage"),
           },
         ],
       },
