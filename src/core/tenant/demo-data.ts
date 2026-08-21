@@ -4,7 +4,7 @@
  * hook backed by `organization_members` once that milestone lands.
  */
 export const DEMO_ORG = {
-  name: "Northgate Retail Co.",
+  name: "Retail Admin",
   businessType: "Retail",
   plan: "Growth",
 };

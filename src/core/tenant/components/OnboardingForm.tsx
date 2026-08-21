@@ -94,7 +94,7 @@ export function OnboardingForm() {
             <FormItem>
               <FormLabel>Organization name</FormLabel>
               <FormControl>
-                <Input placeholder="e.g. Northgate Retail Co." autoFocus {...field} />
+                <Input placeholder="e.g. Retail Admin" autoFocus {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

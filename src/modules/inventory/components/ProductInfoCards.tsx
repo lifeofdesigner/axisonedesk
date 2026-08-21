@@ -3,9 +3,9 @@ import type { Product, Supplier } from "@/modules/inventory/types";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between py-1.5 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
+    <div className="flex items-start justify-between gap-3 py-1.5 text-sm">
+      <span className="text-muted-foreground shrink-0">{label}</span>
+      <span className="font-medium text-right">{value}</span>
     </div>
   );
 }
