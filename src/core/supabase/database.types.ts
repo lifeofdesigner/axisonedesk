@@ -83,6 +83,47 @@ export type Database = {
           },
         ]
       }
+      customers: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          email: string
+          id: string
+          name: string
+          org_id: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          email?: string
+          id?: string
+          name: string
+          org_id: string
+          phone?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          org_id?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_transactions: {
         Row: {
           created_at: string
@@ -130,6 +171,244 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          description: string
+          id: string
+          order_id: string
+          org_id: string
+          type: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          order_id: string
+          org_id: string
+          type: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          order_id?: string
+          org_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_events_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          line_total: number | null
+          order_id: string
+          org_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          sku: string
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          line_total?: number | null
+          order_id: string
+          org_id: string
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          sku: string
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          line_total?: number | null
+          order_id?: string
+          org_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          sku?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_notes: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          id: string
+          order_id: string
+          org_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          order_id: string
+          org_id: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          order_id?: string
+          org_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_notes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_notes_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          deleted_at: string | null
+          discount_amount: number
+          fulfillment_status: Database["public"]["Enums"]["order_fulfillment_status"]
+          id: string
+          order_number: number
+          org_id: string
+          payment_status: Database["public"]["Enums"]["order_payment_status"]
+          shipping_amount: number
+          subtotal: number
+          tax_amount: number
+          total: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          deleted_at?: string | null
+          discount_amount?: number
+          fulfillment_status?: Database["public"]["Enums"]["order_fulfillment_status"]
+          id?: string
+          order_number: number
+          org_id: string
+          payment_status?: Database["public"]["Enums"]["order_payment_status"]
+          shipping_amount?: number
+          subtotal?: number
+          tax_amount?: number
+          total?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          deleted_at?: string | null
+          discount_amount?: number
+          fulfillment_status?: Database["public"]["Enums"]["order_fulfillment_status"]
+          id?: string
+          order_number?: number
+          org_id?: string
+          payment_status?: Database["public"]["Enums"]["order_payment_status"]
+          shipping_amount?: number
+          subtotal?: number
+          tax_amount?: number
+          total?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -671,6 +950,39 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      create_order: {
+        Args: {
+          p_customer_id: string
+          p_discount_amount?: number
+          p_items: Json
+          p_org_id: string
+          p_shipping_amount?: number
+          p_tax_amount?: number
+        }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          deleted_at: string | null
+          discount_amount: number
+          fulfillment_status: Database["public"]["Enums"]["order_fulfillment_status"]
+          id: string
+          order_number: number
+          org_id: string
+          payment_status: Database["public"]["Enums"]["order_payment_status"]
+          shipping_amount: number
+          subtotal: number
+          tax_amount: number
+          total: number | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       create_organization_with_owner: {
         Args: { org_business_type: string; org_name: string; org_slug: string }
         Returns: string
@@ -679,6 +991,37 @@ export type Database = {
       has_permission: {
         Args: { permission_key: string; target_org_id: string }
         Returns: boolean
+      }
+      update_order_status: {
+        Args: {
+          p_fulfillment_status?: Database["public"]["Enums"]["order_fulfillment_status"]
+          p_order_id: string
+          p_org_id: string
+          p_payment_status?: Database["public"]["Enums"]["order_payment_status"]
+        }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          deleted_at: string | null
+          discount_amount: number
+          fulfillment_status: Database["public"]["Enums"]["order_fulfillment_status"]
+          id: string
+          order_number: number
+          org_id: string
+          payment_status: Database["public"]["Enums"]["order_payment_status"]
+          shipping_amount: number
+          subtotal: number
+          tax_amount: number
+          total: number | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
@@ -689,6 +1032,12 @@ export type Database = {
         | "sale"
         | "purchase_receipt"
       member_status: "invited" | "active" | "suspended"
+      order_fulfillment_status:
+        | "unfulfilled"
+        | "partially_fulfilled"
+        | "fulfilled"
+        | "cancelled"
+      order_payment_status: "unpaid" | "partially_paid" | "paid" | "refunded"
       organization_status: "active" | "trialing" | "past_due" | "canceled"
       stock_adjustment_type: "increase" | "decrease" | "transfer"
     }
@@ -829,6 +1178,13 @@ export const Constants = {
         "purchase_receipt",
       ],
       member_status: ["invited", "active", "suspended"],
+      order_fulfillment_status: [
+        "unfulfilled",
+        "partially_fulfilled",
+        "fulfilled",
+        "cancelled",
+      ],
+      order_payment_status: ["unpaid", "partially_paid", "paid", "refunded"],
       organization_status: ["active", "trialing", "past_due", "canceled"],
       stock_adjustment_type: ["increase", "decrease", "transfer"],
     },

@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { RequireAuth, RequireOrg, RedirectIfAuthed } from "@/core/auth/RequireAuth";
 import { AppShell } from "@/shared/components/layout/AppShell";
 import { InventoryLayout } from "@/modules/inventory/InventoryLayout";
+import { OrdersLayout } from "@/modules/orders/OrdersLayout";
 
 export const router = createBrowserRouter([
   {
@@ -66,6 +67,31 @@ export const router = createBrowserRouter([
               {
                 path: "/inventory/products/:productId",
                 lazy: () => import("@/pages/InventoryProductDetailPage"),
+              },
+              {
+                element: <OrdersLayout />,
+                children: [
+                  {
+                    path: "/orders",
+                    lazy: () => import("@/pages/OrdersOverviewPage"),
+                  },
+                  {
+                    path: "/orders/list",
+                    lazy: () => import("@/pages/OrdersListPage"),
+                  },
+                  {
+                    path: "/orders/customers",
+                    lazy: () => import("@/pages/OrdersCustomersPage"),
+                  },
+                ],
+              },
+              {
+                path: "/orders/new",
+                lazy: () => import("@/pages/CreateOrderPage"),
+              },
+              {
+                path: "/orders/:orderId",
+                lazy: () => import("@/pages/OrderDetailPage"),
               },
             ],
           },

@@ -224,8 +224,8 @@ files
 ```
 products, product_variants, product_images, categories, suppliers,
   inventory_transactions, stock_adjustments                             (inventory — finalized, see below)
-orders, order_items, payments, pos_sessions, pos_registers              (pos/orders)
-customers, customer_notes, deals, pipelines                             (crm)
+orders, order_items, order_notes, order_events, customers               (orders — finalized, see below)
+customer_notes, deals, pipelines                                        (crm)
 bookings, booking_resources, availability_rules                         (bookings)
 staff, shifts, timesheets                                               (hr-staff)
 purchase_orders, purchase_order_items                                   (purchasing)
@@ -294,6 +294,89 @@ inventory_transactions                -- append-only; system-wide ledger, trigge
 
 New permission keys (seeded into `permissions`, granted to every org's system `Owner` role):
 `inventory.view`, `inventory.edit`, `inventory.adjust_stock`.
+
+#### SOT reconciliation (Phase 2, orders milestone)
+
+Same approach as the inventory reconciliation: finalized against the actual requirements
+(customer selection, discounts/tax/shipping, payment vs. fulfillment status, a timeline,
+notes) rather than the abstract sketch above. Three deliberate deviations:
+
+- **`customers` built now, provisionally owned by `orders`.** The original sketch assigns
+  `customers` to a future `crm` module, but Orders needs customer selection today and no
+  `crm` module exists yet. `customers` stays minimal (name/email/phone) and owned by
+  `orders` until `crm` is built, at which point `crm` extends this table (customer notes,
+  deals, pipelines) rather than duplicating it — same pattern as `suppliers` moving to
+  `inventory` in the previous milestone.
+- **`payments`/`pos_sessions`/`pos_registers` dropped from this milestone.** The
+  requirements ask for a payment *status* field on the order (unpaid/partially paid/paid/
+  refunded), not a payments ledger or POS register/session tracking — those are real
+  future features (a `pos` module, actual payment processing) but building them
+  speculatively now would be exactly the "features that don't demo well yet and add
+  unverified surface area" this project avoids. `orders.payment_status` covers the
+  stated requirement; a `payments` table is a clean addition later without touching
+  this schema.
+- **`order_events` replaces a bare "order timeline" concept.** Mirrors the
+  `stock_adjustments`/`inventory_transactions` split: `order_notes` is what a user
+  writes; `order_events` is a **derived, trigger-populated, append-only feed** (order
+  created, payment status changed, fulfillment status changed, note added) that the
+  Order Details timeline renders. Clients never insert into `order_events` directly —
+  only the `create_order` RPC and two triggers do.
+
+**Line items are immutable after order creation** — "Edit Order" in this milestone means
+editing order-level fields (customer, discounts, tax, shipping, notes, payment status,
+fulfillment status), not adding/removing/re-quantifying line items after the fact. This is
+a genuine, documented scope boundary (same category as "Edit Product" not existing after
+the inventory milestone), not an oversight: getting item-level edits right requires
+reconciling inventory deltas both directions (return stock on removal, re-validate
+availability on quantity increase, handle partial fulfillment interactions) and that's a
+big enough surface to deserve its own pass rather than being rushed into this one. An
+incorrectly-priced or wrong-quantity order today is cancelled (which restocks inventory
+via the ledger) and recreated correctly.
+
+#### Orders schema (finalized)
+
+```
+customers                             -- provisional; owned by orders until crm exists
+  id, org_id, name, email, phone,
+  created_at, updated_at, deleted_at
+
+orders
+  id, org_id, order_number (per-org sequential, trigger-assigned),
+  customer_id (nullable — walk-in orders allowed, set null on customer delete),
+  payment_status (unpaid|partially_paid|paid|refunded),
+  fulfillment_status (unfulfilled|partially_fulfilled|fulfilled|cancelled),
+  subtotal, discount_amount, tax_amount, shipping_amount,
+  total (generated: subtotal - discount_amount + tax_amount + shipping_amount),
+  created_by, created_at, updated_at, deleted_at
+
+order_items                           -- immutable once created; written only by create_order
+  id, org_id, order_id, product_id (nullable, set null if product later deleted),
+  product_name, sku (both snapshotted at order time — the order shouldn't
+  silently reflect a later product rename), unit_price, quantity,
+  line_total (generated: unit_price * quantity), created_at
+
+order_notes                           -- user-authored, append-only
+  id, org_id, order_id, author_id, body, created_at
+
+order_events                          -- append-only, trigger/RPC-populated only; the timeline
+  id, org_id, order_id, type (created|payment_status_changed|
+  fulfillment_status_changed|note_added|cancelled), description,
+  actor_id, created_at
+```
+
+`create_order` is `security definer` (same justification as the inventory ledger trigger:
+`order_items`/`order_events` accept no direct client writes, so the function that populates
+them needs to bypass that — the function itself re-checks `has_permission()` manually since
+security definer bypasses RLS). It validates stock for every line item, decrements
+`products.quantity`, and writes matching `inventory_transactions` rows with
+`source = 'sale'` — the same ledger the Inventory Dashboard's stock-movement chart already
+reads from, so a sale shows up there automatically. Cancelling a fulfilled order reverses
+those same rows (`direction = 'in'`, same `source = 'sale'`) rather than introducing a
+separate "return" concept this milestone doesn't need yet.
+
+New permission keys: `orders.view`, `orders.edit` (covers create, status changes, notes —
+mirrors inventory's `view`/`edit` split rather than inventing finer granularity that
+nothing in this milestone asks for).
 
 ---
 
