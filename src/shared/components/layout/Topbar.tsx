@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, LogOut, Menu, Moon, Search, Settings, Sun, User as UserIcon } from "lucide-react";
 
@@ -35,6 +36,7 @@ export function Topbar() {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -43,15 +45,15 @@ export function Topbar() {
 
   return (
     <header className="bg-background/80 sticky top-0 z-30 flex h-16 items-center gap-3 border-b px-4 backdrop-blur sm:px-6">
-      <Sheet>
+      <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="lg:hidden">
+          <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu">
             <Menu className="size-5" />
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="bg-sidebar border-sidebar-border w-64 p-0">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <SidebarNav />
+          <SidebarNav onNavigate={() => setMobileNavOpen(false)} />
         </SheetContent>
       </Sheet>
 
