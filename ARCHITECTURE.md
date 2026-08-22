@@ -222,15 +222,78 @@ files
 ### Module tables (examples — expanded per module during implementation)
 
 ```
-products, product_variants, categories, stock_levels, stock_movements   (inventory)
+products, product_variants, product_images, categories, suppliers,
+  inventory_transactions, stock_adjustments                             (inventory — finalized, see below)
 orders, order_items, payments, pos_sessions, pos_registers              (pos/orders)
 customers, customer_notes, deals, pipelines                             (crm)
 bookings, booking_resources, availability_rules                         (bookings)
 staff, shifts, timesheets                                               (hr-staff)
-purchase_orders, purchase_order_items, suppliers                        (purchasing)
+purchase_orders, purchase_order_items                                   (purchasing)
 ```
 
 All module tables follow the same tenant-isolation, timestamp, and soft-delete conventions as core tables.
+
+#### SOT reconciliation (Phase B/C, inventory milestone)
+
+Two deliberate deviations from the original sketch above, made when the inventory schema was
+finalized against the already-shipped UI (Phase 1) rather than guessed in the abstract:
+
+- **`suppliers` moved from `purchasing` to `inventory`.** The Product Details screen already
+  surfaces supplier name/contact/phone as an inventory concern, and there is no `purchasing`
+  module yet. `suppliers` stays owned by `inventory` until a `purchasing` module exists; if/when
+  purchase orders are built, `purchasing` will reference `inventory.suppliers` rather than
+  duplicating it.
+- **`stock_levels`/`stock_movements` replaced by two tables: `stock_adjustments` +
+  `inventory_transactions`.** These serve different jobs and collapsing them into one table
+  would conflate them:
+  - `stock_adjustments` is the **user-facing action log** — one row per manual increase /
+    decrease / transfer made from the Stock Adjustment screen, with reason, notes, and who
+    performed it. It powers the product detail "Stock history" timeline.
+  - `inventory_transactions` is a **generic, append-only ledger** of quantity deltas
+    (`direction: in|out`), written automatically (by trigger) whenever a `stock_adjustment` of
+    type `increase`/`decrease` is inserted (`transfer` doesn't change total quantity, so it isn't
+    ledgered). It exists so future stock-affecting sources — POS sales, purchase-order receipts —
+    can write to the same ledger without being manual "adjustments," and it's what the Inventory
+    Dashboard's stock-movement chart aggregates from. Clients never insert into it directly.
+
+#### Inventory schema (finalized)
+
+```
+categories
+  id, org_id, name, color, icon, description,
+  created_at, updated_at, deleted_at
+
+suppliers
+  id, org_id, name, contact_name, email, phone,
+  created_at, updated_at, deleted_at
+
+products
+  id, org_id, category_id (nullable, set null on category delete),
+  supplier_id (nullable, set null on supplier delete),
+  name, sku, barcode, description,
+  cost_price, selling_price, quantity, reorder_point, unit, location,
+  created_at, updated_at, deleted_at
+
+product_images
+  id, org_id, product_id, url, sort_order, created_at, updated_at
+
+product_variants
+  id, org_id, product_id, name, sku, price_delta, quantity,
+  created_at, updated_at
+
+stock_adjustments                     -- append-only; the manual action log
+  id, org_id, product_id, type (increase|decrease|transfer), quantity,
+  reason, notes, performed_by, resulting_quantity,
+  from_location, to_location, created_at
+
+inventory_transactions                -- append-only; system-wide ledger, trigger-populated only
+  id, org_id, product_id, direction (in|out), quantity,
+  source (adjustment|transfer|sale|purchase_receipt), source_id,
+  occurred_at, created_at
+```
+
+New permission keys (seeded into `permissions`, granted to every org's system `Owner` role):
+`inventory.view`, `inventory.edit`, `inventory.adjust_stock`.
 
 ---
 

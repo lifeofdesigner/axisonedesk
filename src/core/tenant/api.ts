@@ -1,4 +1,5 @@
 import { supabase } from "@/core/supabase/client";
+import { toAppError } from "@/core/error/AppError";
 
 export interface CreateOrganizationInput {
   name: string;
@@ -14,8 +15,41 @@ export async function createOrganization(input: CreateOrganizationInput) {
     org_business_type: input.businessType,
   });
 
-  if (error) throw error;
+  if (error) throw toAppError(error);
   return data;
+}
+
+export interface MyOrganization {
+  id: string;
+  name: string;
+  slug: string;
+  businessType: string;
+  status: string;
+}
+
+/**
+ * Every organization the signed-in user is an active member of. Backs org
+ * resolution/switching in OrganizationProvider — never call `organizations`
+ * directly from a component.
+ */
+export async function listMyOrganizations(): Promise<MyOrganization[]> {
+  const { data, error } = await supabase
+    .from("organization_members")
+    .select("organizations(id, name, slug, business_type, status)")
+    .eq("status", "active");
+
+  if (error) throw toAppError(error);
+
+  return (data ?? [])
+    .map((row) => row.organizations)
+    .filter((org): org is NonNullable<typeof org> => org !== null)
+    .map((org) => ({
+      id: org.id,
+      name: org.name,
+      slug: org.slug,
+      businessType: org.business_type,
+      status: org.status,
+    }));
 }
 
 function slugify(value: string): string {

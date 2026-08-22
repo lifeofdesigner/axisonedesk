@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Building2,
   GraduationCap,
@@ -19,6 +20,7 @@ import {
 import { toast } from "sonner";
 
 import { createOrganization } from "@/core/tenant/api";
+import { organizationsQueryKey } from "@/core/tenant/OrganizationProvider";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import {
@@ -54,6 +56,7 @@ type OnboardingValues = z.infer<typeof onboardingSchema>;
 
 export function OnboardingForm() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm<OnboardingValues>({
@@ -71,6 +74,7 @@ export function OnboardingForm() {
       toast.success("Organization created", {
         description: `${values.organizationName} is ready to go.`,
       });
+      await queryClient.invalidateQueries({ queryKey: organizationsQueryKey });
       navigate("/", { replace: true });
     } catch (error) {
       toast.error("Couldn't create your organization", {

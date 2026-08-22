@@ -31,8 +31,8 @@ export interface Product {
   sku: string;
   barcode: string;
   description: string;
-  categoryId: string;
-  supplierId: string;
+  categoryId: string | null;
+  supplierId: string | null;
   images: string[];
   costPrice: number;
   sellingPrice: number;

@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { RequireAuth, RedirectIfAuthed } from "@/core/auth/RequireAuth";
+import { RequireAuth, RequireOrg, RedirectIfAuthed } from "@/core/auth/RequireAuth";
 import { AppShell } from "@/shared/components/layout/AppShell";
 import { InventoryLayout } from "@/modules/inventory/InventoryLayout";
 
@@ -29,40 +29,45 @@ export const router = createBrowserRouter([
         lazy: () => import("@/pages/OnboardingPage"),
       },
       {
-        element: <AppShell />,
+        element: <RequireOrg />,
         children: [
           {
-            path: "/",
-            lazy: () => import("@/pages/DashboardPage"),
-          },
-          {
-            element: <InventoryLayout />,
+            element: <AppShell />,
             children: [
               {
-                path: "/inventory",
-                lazy: () => import("@/pages/InventoryOverviewPage"),
+                path: "/",
+                lazy: () => import("@/pages/DashboardPage"),
               },
               {
-                path: "/inventory/products",
-                lazy: () => import("@/pages/InventoryProductsPage"),
+                element: <InventoryLayout />,
+                children: [
+                  {
+                    path: "/inventory",
+                    lazy: () => import("@/pages/InventoryOverviewPage"),
+                  },
+                  {
+                    path: "/inventory/products",
+                    lazy: () => import("@/pages/InventoryProductsPage"),
+                  },
+                  {
+                    path: "/inventory/categories",
+                    lazy: () => import("@/pages/InventoryCategoriesPage"),
+                  },
+                  {
+                    path: "/inventory/adjustments",
+                    lazy: () => import("@/pages/InventoryAdjustmentsPage"),
+                  },
+                ],
               },
               {
-                path: "/inventory/categories",
-                lazy: () => import("@/pages/InventoryCategoriesPage"),
+                path: "/inventory/products/new",
+                lazy: () => import("@/pages/InventoryAddProductPage"),
               },
               {
-                path: "/inventory/adjustments",
-                lazy: () => import("@/pages/InventoryAdjustmentsPage"),
+                path: "/inventory/products/:productId",
+                lazy: () => import("@/pages/InventoryProductDetailPage"),
               },
             ],
-          },
-          {
-            path: "/inventory/products/new",
-            lazy: () => import("@/pages/InventoryAddProductPage"),
-          },
-          {
-            path: "/inventory/products/:productId",
-            lazy: () => import("@/pages/InventoryProductDetailPage"),
           },
         ],
       },

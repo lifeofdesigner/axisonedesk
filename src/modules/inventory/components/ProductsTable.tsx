@@ -33,6 +33,7 @@ import { useState } from "react";
 import { useCategories, useDeleteProduct, useProducts } from "@/modules/inventory/hooks";
 import { getStockStatus, type Product } from "@/modules/inventory/types";
 import { StockStatusBadge } from "@/modules/inventory/components/StockStatusBadge";
+import { ProductThumb } from "@/modules/inventory/components/ProductThumb";
 
 const columnHelper = createColumnHelper<Product & { categoryName: string }>();
 
@@ -64,7 +65,7 @@ export function ProductsTable({
     () =>
       (products ?? []).map((p) => ({
         ...p,
-        categoryName: categoryMap.get(p.categoryId) ?? "Uncategorized",
+        categoryName: (p.categoryId && categoryMap.get(p.categoryId)) || "Uncategorized",
       })),
     [products, categoryMap],
   );
@@ -76,10 +77,10 @@ export function ProductsTable({
         header: "Product",
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
-            <img
+            <ProductThumb
               src={row.original.images[0]}
               alt={row.original.name}
-              className="bg-muted size-10 shrink-0 rounded-lg object-cover"
+              className="size-10"
             />
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">{row.original.name}</p>

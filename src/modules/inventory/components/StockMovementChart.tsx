@@ -1,3 +1,4 @@
+import { BarChart3 } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -8,7 +9,9 @@ import {
   YAxis,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { stockMovementTrend } from "@/modules/inventory/data/mock";
+import { EmptyState } from "@/shared/components/data/EmptyState";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useStockMovementTrend } from "@/modules/inventory/hooks";
 
 function CustomTooltip({
   active,
@@ -36,6 +39,9 @@ function CustomTooltip({
 }
 
 export function StockMovementChart() {
+  const { data, isLoading } = useStockMovementTrend();
+  const hasActivity = data?.some((day) => day.stockIn > 0 || day.stockOut > 0);
+
   return (
     <Card className="gap-4">
       <CardHeader className="flex-row items-center justify-between">
@@ -55,8 +61,18 @@ export function StockMovementChart() {
         </div>
       </CardHeader>
       <CardContent className="h-72 px-2 sm:px-4">
+        {isLoading ? (
+          <Skeleton className="h-full w-full" />
+        ) : !hasActivity ? (
+          <EmptyState
+            icon={BarChart3}
+            title="No stock movement yet"
+            description="Adjustments you make will show up here as daily in/out totals."
+            className="h-full justify-center border-none py-0"
+          />
+        ) : (
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={stockMovementTrend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
             <XAxis
               dataKey="date"
@@ -89,6 +105,7 @@ export function StockMovementChart() {
             />
           </BarChart>
         </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );

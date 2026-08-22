@@ -107,7 +107,7 @@ export function InventoryOverview() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium">{category.name}</p>
                         <p className="text-muted-foreground text-xs">
-                          {category.productCount} products
+                          {category.productCount} product{category.productCount === 1 ? "" : "s"}
                         </p>
                       </div>
                     </Link>

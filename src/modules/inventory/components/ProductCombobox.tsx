@@ -12,6 +12,7 @@ import {
 } from "@/shared/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { useProducts } from "@/modules/inventory/hooks";
+import { ProductThumb } from "@/modules/inventory/components/ProductThumb";
 
 export function ProductCombobox({
   value,
@@ -35,7 +36,7 @@ export function ProductCombobox({
         >
           {selected ? (
             <span className="flex items-center gap-2 truncate">
-              <img src={selected.images[0]} alt="" className="size-5 rounded object-cover" />
+              <ProductThumb src={selected.images[0]} alt="" className="size-5" />
               {selected.name}
               <span className="text-muted-foreground">({selected.sku})</span>
             </span>
@@ -63,7 +64,7 @@ export function ProductCombobox({
                     setOpen(false);
                   }}
                 >
-                  <img src={product.images[0]} alt="" className="size-6 rounded object-cover" />
+                  <ProductThumb src={product.images[0]} alt="" className="size-6" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm">{product.name}</p>
                     <p className="text-muted-foreground text-xs">{product.sku}</p>

@@ -3,8 +3,8 @@ import { Bell, LogOut, Menu, Moon, Search, Settings, Sun, User as UserIcon } fro
 
 import { useAuth } from "@/core/auth/AuthProvider";
 import { supabase } from "@/core/supabase/client";
-import { DEMO_ORG } from "@/core/tenant/demo-data";
 import { useTheme } from "@/shared/hooks/use-theme";
+import { OrgSwitcher } from "@/shared/components/layout/OrgSwitcher";
 import { SidebarNav } from "@/shared/components/layout/SidebarNav";
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
 import { Badge } from "@/shared/components/ui/badge";
@@ -64,10 +64,7 @@ export function Topbar() {
       </div>
 
       <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-        <div className="mr-1 hidden flex-col items-end leading-tight md:flex">
-          <span className="text-sm font-medium">{DEMO_ORG.name}</span>
-          <span className="text-muted-foreground text-xs">{DEMO_ORG.businessType} workspace</span>
-        </div>
+        <OrgSwitcher />
 
         <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
           {theme === "dark" ? <Sun className="size-4.5" /> : <Moon className="size-4.5" />}

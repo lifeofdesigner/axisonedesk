@@ -31,6 +31,7 @@ import {
 
 import { ProductCombobox } from "@/modules/inventory/components/ProductCombobox";
 import { StockHistoryTimeline } from "@/modules/inventory/components/StockHistoryTimeline";
+import { ProductThumb } from "@/modules/inventory/components/ProductThumb";
 import { useAdjustStock, useProduct, useStockMovements } from "@/modules/inventory/hooks";
 import type { StockMovementType } from "@/modules/inventory/types";
 
@@ -112,11 +113,7 @@ export function StockAdjustmentPage() {
             <CardHeader className="flex-row items-center justify-between">
               <div className="flex items-center gap-3">
                 {product ? (
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="bg-muted size-10 rounded-lg object-cover"
-                  />
+                  <ProductThumb src={product.images[0]} alt={product.name} className="size-10" />
                 ) : null}
                 <div>
                   <CardTitle className="text-base">{product?.name}</CardTitle>

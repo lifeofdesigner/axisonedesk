@@ -6,13 +6,15 @@ import { RecentOrdersTable } from "@/modules/dashboard/components/RecentOrdersTa
 import { LowStockPanel } from "@/modules/dashboard/components/LowStockPanel";
 import { TopProductsPanel } from "@/modules/dashboard/components/TopProductsPanel";
 import { kpis } from "@/modules/dashboard/data/mock";
-import { DEMO_ORG } from "@/core/tenant/demo-data";
+import { useCurrentOrganization } from "@/core/tenant/OrganizationProvider";
 
 export function DashboardOverview() {
+  const { activeOrg } = useCurrentOrganization();
+
   return (
     <div>
       <PageHeader
-        title={`Welcome back — ${DEMO_ORG.name}`}
+        title={activeOrg ? `Welcome back — ${activeOrg.name}` : "Welcome back"}
         description="Here's how your business is performing today."
         actions={<Button variant="outline">Export report</Button>}
       />

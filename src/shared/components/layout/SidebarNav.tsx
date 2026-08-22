@@ -2,8 +2,9 @@ import { NavLink } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { bottomNavItems, navItems, type NavItem } from "@/shared/components/layout/nav-items";
 import { Badge } from "@/shared/components/ui/badge";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
-import { DEMO_ORG } from "@/core/tenant/demo-data";
+import { useCurrentOrganization } from "@/core/tenant/OrganizationProvider";
 
 function NavRow({ item }: { item: NavItem }) {
   const Icon = item.icon;
@@ -48,6 +49,8 @@ function NavRow({ item }: { item: NavItem }) {
 }
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
+  const { activeOrg, isLoading } = useCurrentOrganization();
+
   return (
     <div className="flex h-full flex-col" onClick={onNavigate}>
       <div className="flex items-center gap-2 px-4 py-5">
@@ -72,10 +75,23 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <div className="border-sidebar-border mx-3 mb-4 rounded-lg border p-3">
-        <p className="text-sidebar-foreground text-xs font-medium">{DEMO_ORG.plan} plan</p>
-        <p className="text-sidebar-muted mt-0.5 text-xs">
-          {DEMO_ORG.businessType} workspace
-        </p>
+        {isLoading ? (
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-3.5 w-24 bg-white/10" />
+            <Skeleton className="h-3 w-32 bg-white/10" />
+          </div>
+        ) : activeOrg ? (
+          <>
+            <p className="text-sidebar-foreground truncate text-xs font-medium">
+              {activeOrg.name}
+            </p>
+            <p className="text-sidebar-muted mt-0.5 text-xs capitalize">
+              {activeOrg.businessType} workspace
+            </p>
+          </>
+        ) : (
+          <p className="text-sidebar-muted text-xs">No workspace selected</p>
+        )}
       </div>
     </div>
   );
