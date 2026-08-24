@@ -3,6 +3,8 @@ import { RequireAuth, RequireOrg, RedirectIfAuthed } from "@/core/auth/RequireAu
 import { AppShell } from "@/shared/components/layout/AppShell";
 import { InventoryLayout } from "@/modules/inventory/InventoryLayout";
 import { OrdersLayout } from "@/modules/orders/OrdersLayout";
+import { CrmLayout } from "@/modules/crm/CrmLayout";
+import { SettingsLayout } from "@/modules/settings/SettingsLayout";
 
 export const router = createBrowserRouter([
   {
@@ -92,6 +94,68 @@ export const router = createBrowserRouter([
               {
                 path: "/orders/:orderId",
                 lazy: () => import("@/pages/OrderDetailPage"),
+              },
+              {
+                element: <CrmLayout />,
+                children: [
+                  {
+                    path: "/crm",
+                    lazy: () => import("@/pages/CrmOverviewPage"),
+                  },
+                  {
+                    path: "/crm/customers",
+                    lazy: () => import("@/pages/CrmCustomersPage"),
+                  },
+                ],
+              },
+              {
+                path: "/crm/customers/:customerId",
+                lazy: () => import("@/pages/CrmCustomerDetailPage"),
+              },
+              {
+                path: "/bookings",
+                lazy: () => import("@/pages/BookingsOverviewPage"),
+              },
+              {
+                path: "/purchasing",
+                lazy: () => import("@/pages/PurchasingOverviewPage"),
+              },
+              {
+                path: "/purchasing/new",
+                lazy: () => import("@/pages/CreatePurchaseOrderPage"),
+              },
+              {
+                path: "/purchasing/:purchaseOrderId",
+                lazy: () => import("@/pages/PurchaseOrderDetailPage"),
+              },
+              {
+                path: "/hr-staff",
+                lazy: () => import("@/pages/HrOverviewPage"),
+              },
+              {
+                path: "/reports",
+                lazy: () => import("@/pages/ReportsOverviewPage"),
+              },
+              {
+                path: "/billing",
+                lazy: () => import("@/pages/BillingOverviewPage"),
+              },
+              {
+                path: "/ai-assistant",
+                lazy: () => import("@/pages/AiAssistantOverviewPage"),
+              },
+              {
+                element: <SettingsLayout />,
+                children: [
+                  {
+                    path: "/settings",
+                    lazy: () => import("@/pages/SettingsOrgProfilePage"),
+                  },
+                  {
+                    path: "/settings/members",
+                    lazy: () => import("@/pages/SettingsMembersPage"),
+                  },
+                ],
               },
             ],
           },

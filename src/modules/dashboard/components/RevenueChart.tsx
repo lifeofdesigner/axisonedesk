@@ -10,7 +10,8 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
-import { revenueSeries } from "@/modules/dashboard/data/mock";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { useRevenueSeries } from "@/modules/dashboard/hooks";
 
 const ranges = [
   { key: "7d", label: "7D", days: 7 },
@@ -40,11 +41,12 @@ function CustomTooltip({
 
 export function RevenueChart() {
   const [range, setRange] = useState<(typeof ranges)[number]["key"]>("30d");
+  const { data: revenueSeries, isLoading } = useRevenueSeries();
 
   const data = useMemo(() => {
     const days = ranges.find((r) => r.key === range)?.days ?? 30;
-    return revenueSeries.slice(-days);
-  }, [range]);
+    return (revenueSeries ?? []).slice(-days);
+  }, [range, revenueSeries]);
 
   return (
     <Card className="gap-4">
@@ -64,47 +66,47 @@ export function RevenueChart() {
         </Tabs>
       </CardHeader>
       <CardContent className="h-72 px-2 sm:px-4">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="hsl(var(--chart-1))" stopOpacity={0.25} />
-                <stop offset="100%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid
-              vertical={false}
-              stroke="hsl(var(--border))"
-              strokeDasharray="3 3"
-            />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
-              interval="preserveStartEnd"
-              minTickGap={24}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
-              tickFormatter={(v) => `$${v / 1000}k`}
-              width={40}
-            />
-            <Tooltip content={<CustomTooltip />} cursor={{ stroke: "hsl(var(--border))" }} />
-            <Area
-              type="monotone"
-              dataKey="revenue"
-              stroke="hsl(var(--chart-1))"
-              strokeWidth={2}
-              strokeLinecap="round"
-              fill="url(#revenueFill)"
-              dot={false}
-              activeDot={{ r: 4, strokeWidth: 0, fill: "hsl(var(--chart-1))" }}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+        {isLoading ? (
+          <Skeleton className="h-full w-full" />
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(var(--chart-1))" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+                interval="preserveStartEnd"
+                minTickGap={24}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+                tickFormatter={(v) => `$${v / 1000}k`}
+                width={40}
+              />
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: "hsl(var(--border))" }} />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="hsl(var(--chart-1))"
+                strokeWidth={2}
+                strokeLinecap="round"
+                fill="url(#revenueFill)"
+                dot={false}
+                activeDot={{ r: 4, strokeWidth: 0, fill: "hsl(var(--chart-1))" }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );

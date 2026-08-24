@@ -25,15 +25,15 @@ export const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Inventory", href: "/inventory", icon: Boxes },
   { label: "Orders", href: "/orders", icon: ClipboardList },
-  { label: "Bookings", href: "/bookings", icon: CalendarClock, comingSoon: true },
-  { label: "CRM", href: "/crm", icon: Users, comingSoon: true },
-  { label: "Purchasing", href: "/purchasing", icon: Truck, comingSoon: true },
-  { label: "Reports", href: "/reports", icon: BarChart3, comingSoon: true },
-  { label: "HR & Staff", href: "/hr-staff", icon: UserCog, comingSoon: true },
-  { label: "AI Assistant", href: "/ai-assistant", icon: Sparkles, comingSoon: true },
+  { label: "Bookings", href: "/bookings", icon: CalendarClock },
+  { label: "CRM", href: "/crm", icon: Users },
+  { label: "Purchasing", href: "/purchasing", icon: Truck },
+  { label: "Reports", href: "/reports", icon: BarChart3 },
+  { label: "HR & Staff", href: "/hr-staff", icon: UserCog },
+  { label: "AI Assistant", href: "/ai-assistant", icon: Sparkles },
 ];
 
 export const bottomNavItems: NavItem[] = [
-  { label: "Billing", href: "/billing", icon: CreditCard, comingSoon: true },
-  { label: "Settings", href: "/settings", icon: Settings, comingSoon: true },
+  { label: "Billing", href: "/billing", icon: CreditCard },
+  { label: "Settings", href: "/settings", icon: Settings },
 ];
