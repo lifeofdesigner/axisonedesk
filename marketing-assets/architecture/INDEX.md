@@ -1,8 +1,10 @@
 # Architecture Milestone — Content Package
 
 This package documents the **Architecture & Source of Truth milestone** — the design phase
-that came before any feature code, and the fact that two real feature milestones (Inventory,
-Orders) shipped since without a schema rewrite or a broken module boundary.
+that came before any feature code — and now, with the addition of `whole-build-100s-landscape.mp4`
+below, the full arc from that approved doc through nine live modules (Inventory, Orders, CRM,
+Bookings, Purchasing, HR & Staff, Reports, Billing, plus a live-wired Dashboard) shipped since
+without a schema rewrite or a broken module boundary.
 
 **This is a documentation milestone, not a feature milestone** — there's no live app UI to
 demo here (that's what `marketing-assets/phase-1/` and `marketing-assets/phase-2/` are for).
@@ -30,7 +32,8 @@ marketing-assets/architecture/
 ├── videos/
 │   ├── architecture-15s-vertical.mp4           — 14.9s, 1080×1920
 │   ├── architecture-30s-vertical.mp4           — 30.0s, 1080×1920
-│   └── architecture-60s-landscape.mp4          — 57.3s, 1920×1080
+│   ├── architecture-60s-landscape.mp4          — 57.3s, 1920×1080
+│   └── whole-build-100s-landscape.mp4          — 98.6s, 1920×1080 — the full build recap
 └── screenshots/
     ├── hero/                    (3 images)     — cold-open / summary frames
     ├── architecture/            (5 images)     — tenant isolation, module boundaries, ER diagram
@@ -57,6 +60,16 @@ called out), folder organization, a database ER-style diagram of the `orders` �
 timeline, a real before/after screenshot (mock data → live Supabase from Phase 1), the
 architecture running in the actual shipped app (a real Phase 2 screenshot), and the closing
 milestone summary.
+
+**`whole-build-100s-landscape.mp4`** (14 slides, ~7.1s each): the full-scope recap, made after
+the module roadmap was completed in one pass. Title → real stat slide (9 modules, 9 migrations,
+0 type errors, 0 cross-module imports) → nine consecutive real screenshots, one per module,
+freshly captured live from the running app in this session (Dashboard now on real data, then
+Inventory, Orders, CRM, Bookings, Purchasing, HR & Staff, Reports, Billing in build order) →
+the module-boundary principle restated with the full nine-module grid → a migrations table
+covering all nine files → closing summary. Two of the screenshots (Bookings, and parts of HR/
+Reports) show genuine empty states — those modules exist and work, but no one has created a
+booking or logged hours in the demo org yet. That's shown as-is, not staged with fake data.
 
 ## Voice-over script (optional — no audio is baked into the videos)
 
