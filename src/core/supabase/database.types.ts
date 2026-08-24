@@ -39,6 +39,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json
+          org_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json
+          org_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json
+          org_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_resources: {
         Row: {
           capacity: number
@@ -1066,6 +1110,7 @@ export type Database = {
           business_type: string
           created_at: string
           currency: string
+          deleted_at: string | null
           id: string
           name: string
           slug: string
@@ -1078,6 +1123,7 @@ export type Database = {
           business_type: string
           created_at?: string
           currency?: string
+          deleted_at?: string | null
           id?: string
           name: string
           slug: string
@@ -1090,6 +1136,7 @@ export type Database = {
           business_type?: string
           created_at?: string
           currency?: string
+          deleted_at?: string | null
           id?: string
           name?: string
           slug?: string
@@ -1151,6 +1198,24 @@ export type Database = {
           price_monthly?: number
           price_yearly?: number
           seat_limit?: number | null
+        }
+        Relationships: []
+      }
+      platform_admins: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -1942,9 +2007,66 @@ export type Database = {
         Returns: boolean
       }
       factorymvp_user_business_ids: { Args: never; Returns: string[] }
+      get_platform_organization: { Args: { p_org_id: string }; Returns: Json }
       has_permission: {
         Args: { permission_key: string; target_org_id: string }
         Returns: boolean
+      }
+      is_platform_admin: { Args: { p_user_id: string }; Returns: boolean }
+      list_platform_organizations: {
+        Args: never
+        Returns: {
+          business_type: string
+          created_at: string
+          deleted_at: string
+          id: string
+          member_count: number
+          name: string
+          plan_name: string
+          slug: string
+          status: Database["public"]["Enums"]["organization_status"]
+        }[]
+      }
+      log_audit_event: {
+        Args: {
+          p_action: string
+          p_entity_id: string
+          p_entity_type: string
+          p_metadata?: Json
+          p_org_id: string
+        }
+        Returns: undefined
+      }
+      platform_archive_organization: {
+        Args: { p_org_id: string }
+        Returns: undefined
+      }
+      platform_dashboard_stats: { Args: never; Returns: Json }
+      platform_list_audit_logs: {
+        Args: { p_limit?: number }
+        Returns: {
+          action: string
+          actor_id: string
+          actor_name: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json
+          org_id: string
+          org_name: string
+        }[]
+      }
+      platform_restore_organization: {
+        Args: { p_org_id: string }
+        Returns: undefined
+      }
+      platform_set_organization_status: {
+        Args: {
+          p_org_id: string
+          p_status: Database["public"]["Enums"]["organization_status"]
+        }
+        Returns: undefined
       }
       receive_purchase_order: {
         Args: { p_org_id: string; p_purchase_order_id: string }
@@ -2014,7 +2136,13 @@ export type Database = {
         | "fulfilled"
         | "cancelled"
       order_payment_status: "unpaid" | "partially_paid" | "paid" | "refunded"
-      organization_status: "active" | "trialing" | "past_due" | "canceled"
+      organization_status:
+        | "active"
+        | "trialing"
+        | "past_due"
+        | "canceled"
+        | "suspended"
+        | "archived"
       stock_adjustment_type: "increase" | "decrease" | "transfer"
     }
     CompositeTypes: {
@@ -2162,7 +2290,14 @@ export const Constants = {
         "cancelled",
       ],
       order_payment_status: ["unpaid", "partially_paid", "paid", "refunded"],
-      organization_status: ["active", "trialing", "past_due", "canceled"],
+      organization_status: [
+        "active",
+        "trialing",
+        "past_due",
+        "canceled",
+        "suspended",
+        "archived",
+      ],
       stock_adjustment_type: ["increase", "decrease", "transfer"],
     },
   },

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>AxisOneDesk — Local Admin Bootstrap Tool</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 40px; background: #0a0c12; color: #f2f3f8;
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+  }
+  h1 { font-size: 22px; margin: 0 0 4px 0; }
+  .warn {
+    background: rgba(240,178,60,0.12); border: 1px solid rgba(240,178,60,0.35);
+    color: #f0b23c; padding: 12px 16px; border-radius: 8px; font-size: 13px; margin: 16px 0 28px 0;
+  }
+  h2 { font-size: 15px; color: #9aa1b8; text-transform: uppercase; letter-spacing: 0.05em; margin: 32px 0 12px 0; }
+  .card { background: #12151f; border: 1px solid #262c3d; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+  input, select {
+    background: #191d2b; border: 1px solid #262c3d; color: #f2f3f8;
+    padding: 8px 10px; border-radius: 6px; font-size: 14px; margin-right: 8px;
+  }
+  button {
+    background: #8484f5; color: white; border: none; padding: 8px 14px;
+    border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 600;
+  }
+  button.secondary { background: #262c3d; color: #f2f3f8; }
+  button.danger { background: #f0616b; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: #9aa1b8; font-weight: 600; padding: 8px; border-bottom: 1px solid #262c3d; }
+  td { padding: 8px; border-bottom: 1px solid #1c2130; vertical-align: middle; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .badge.admin { background: rgba(62,224,160,0.14); color: #3ee0a0; }
+  .status { font-size: 12px; color: #5b6178; margin-top: 8px; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+  <h1>AxisOneDesk — Local Admin Bootstrap Tool</h1>
+  <div class="warn">
+    ⚠ Local-only. This page uses the service_role key and bypasses all RLS. Never expose this
+    server publicly, never deploy it, never commit .env.local.
+  </div>
+
+  <h2>Create a user</h2>
+  <div class="card">
+    <div class="row">
+      <input id="new-email" placeholder="email@example.com" type="email">
+      <input id="new-password" placeholder="password" type="password">
+      <input id="new-name" placeholder="Full name (optional)">
+      <button onclick="createUser()">Create user</button>
+    </div>
+    <div class="status" id="create-status"></div>
+  </div>
+
+  <h2>Users</h2>
+  <div class="card">
+    <table id="users-table">
+      <thead>
+        <tr><th>Email</th><th>Name</th><th>Platform admin</th><th>Org roles</th><th>Assign org role</th></tr>
+      </thead>
+      <tbody id="users-body"></tbody>
+    </table>
+  </div>
+
+  <script>
+    let state = { users: [], orgs: [], roles: [] };
+
+    async function refresh() {
+      const res = await fetch("/api/state");
+      state = await res.json();
+      render();
+    }
+
+    function render() {
+      const tbody = document.getElementById("users-body");
+      tbody.innerHTML = "";
+      for (const u of state.users) {
+        const tr = document.createElement("tr");
+
+        const rolesText = u.orgMemberships
+          .map((m) => {
+            const org = state.orgs.find((o) => o.id === m.orgId);
+            return (org ? org.name : m.orgId) + " (" + m.roleName + ")";
+          })
+          .join(", ") || "—";
+
+        const orgOptions = state.orgs.map((o) => `<option value="${o.id}">${o.name}</option>`).join("");
+        const roleOptions = state.roles
+          .filter((r) => r.is_system_role)
+          .map((r) => `<option value="${r.id}" data-org="${r.org_id}">${r.name}</option>`)
+          .join("");
+
+        tr.innerHTML = `
+          <td>${u.email}</td>
+          <td>${u.fullName ?? "—"}</td>
+          <td>${u.isPlatformAdmin ? '<span class="badge admin">Platform admin</span>' : "—"}</td>
+          <td>${rolesText}</td>
+          <td>
+            <div class="row">
+              <button class="secondary" onclick="togglePlatformAdmin('${u.id}', ${u.isPlatformAdmin})">
+                ${u.isPlatformAdmin ? "Revoke admin" : "Grant admin"}
+              </button>
+              <select data-user="${u.id}" class="org-select">${orgOptions}</select>
+              <select data-user="${u.id}" class="role-select">${roleOptions}</select>
+              <button onclick="assignRole('${u.id}')">Assign</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    async function createUser() {
+      const email = document.getElementById("new-email").value;
+      const password = document.getElementById("new-password").value;
+      const fullName = document.getElementById("new-name").value;
+      const statusEl = document.getElementById("create-status");
+      statusEl.textContent = "Creating...";
+      const res = await fetch("/api/create-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, fullName }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        statusEl.textContent = "Error: " + data.error;
+        return;
+      }
+      statusEl.textContent = "Created user " + data.userId;
+      document.getElementById("new-email").value = "";
+      document.getElementById("new-password").value = "";
+      document.getElementById("new-name").value = "";
+      await refresh();
+    }
+
+    async function togglePlatformAdmin(userId, isAdmin) {
+      const endpoint = isAdmin ? "/api/revoke-platform-admin" : "/api/grant-platform-admin";
+      await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      await refresh();
+    }
+
+    async function assignRole(userId) {
+      const orgSelect = document.querySelector(`.org-select[data-user="${userId}"]`);
+      const roleSelect = document.querySelector(`.role-select[data-user="${userId}"]`);
+      const orgId = orgSelect.value;
+      const roleId = roleSelect.value;
+      if (!orgId || !roleId) return;
+      await fetch("/api/assign-org-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, orgId, roleId }),
+      });
+      await refresh();
+    }
+
+    refresh();
+  </script>
+</body>
+</html>

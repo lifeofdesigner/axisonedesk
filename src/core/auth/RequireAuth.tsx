@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/core/auth/AuthProvider";
 import { useCurrentOrganization } from "@/core/tenant/OrganizationProvider";
+import { useIsPlatformAdmin } from "@/core/platform-admin/hooks";
 
 export function RequireAuth() {
   const { session, loading } = useAuth();
@@ -27,6 +28,20 @@ export function RequireOrg() {
 
   if (!activeOrg && location.pathname !== "/onboarding") {
     return <Navigate to="/onboarding" replace />;
+  }
+
+  return <Outlet />;
+}
+
+export function RequirePlatformAdmin() {
+  const { isPlatformAdmin, isLoading } = useIsPlatformAdmin();
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (!isPlatformAdmin) {
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

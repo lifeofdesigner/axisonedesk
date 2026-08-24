@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
-import { RequireAuth, RequireOrg, RedirectIfAuthed } from "@/core/auth/RequireAuth";
+import { RequireAuth, RequireOrg, RequirePlatformAdmin, RedirectIfAuthed } from "@/core/auth/RequireAuth";
+import { PlatformAdminShell } from "@/modules/platform-admin/PlatformAdminShell";
 import { AppShell } from "@/shared/components/layout/AppShell";
 import { InventoryLayout } from "@/modules/inventory/InventoryLayout";
 import { OrdersLayout } from "@/modules/orders/OrdersLayout";
@@ -30,6 +31,32 @@ export const router = createBrowserRouter([
       {
         path: "/onboarding",
         lazy: () => import("@/pages/OnboardingPage"),
+      },
+      {
+        element: <RequirePlatformAdmin />,
+        children: [
+          {
+            element: <PlatformAdminShell />,
+            children: [
+              {
+                path: "/platform-admin",
+                lazy: () => import("@/pages/PlatformDashboardPage"),
+              },
+              {
+                path: "/platform-admin/tenants",
+                lazy: () => import("@/pages/PlatformTenantsPage"),
+              },
+              {
+                path: "/platform-admin/tenants/:orgId",
+                lazy: () => import("@/pages/PlatformTenantDetailPage"),
+              },
+              {
+                path: "/platform-admin/audit-log",
+                lazy: () => import("@/pages/PlatformAuditLogPage"),
+              },
+            ],
+          },
+        ],
       },
       {
         element: <RequireOrg />,
