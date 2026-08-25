@@ -1,0 +1,40 @@
+---
+title: Progress Log
+last_updated: 2026-08-25
+---
+
+# Progress
+
+Chronological build order, from `git log --oneline` (oldest → newest). This is the authoritative build history; see [CHANGELOG.md](CHANGELOG.md) for a human-readable per-release summary.
+
+1. `8b47a5e` Phase 0 foundation — auth, organizations, RBAC data model, tenant provider.
+2. `4c74117` Inventory (schema + UI).
+3. `e432a57` Inventory live wiring.
+4. `494d634` Orders.
+5. `13c6436` CRM, Bookings, Purchasing, HR, Reports, Billing (read-only), AI Assistant shell, Dashboard.
+6. `c2ceb74` Platform Owner Portal Phase 1 (tenants, audit log).
+7. `80548ba` Feature Flags.
+8. `40fe11c` Branding / white-label.
+9. `eaba9b0` Subscription & Licensing (plans, coupons, manual invoicing, tenant subscription editor).
+10. `d655b32` User & Role Management (platform-wide directory + dynamic RBAC editor).
+11. `4402cbd` Support Center (tickets, threaded conversation, internal notes).
+12. `68ed0d1` Media Library (file manager on `axiondesk-assets` bucket).
+13. `6570f2e` Notifications (in-app notifications, announcements, maintenance mode).
+14. `370889b` AI Provider Management (config only, no live LLM).
+15. `135fd8e` System Health & Monitoring.
+16. `985546e` Security Center.
+17. `ba980af` Developer Tools (API keys / webhooks / edge functions registry).
+18. `dbb4b67` CMS (public pages).
+19. `cfb9f33` Vercel deep-link routing fix.
+20. `[this session]` ADOS documentation system established (docs/, .ai/).
+
+## What's NOT yet started
+
+- Industry Module Engine (Module Registry, Industry/Org-Type templates, template-driven onboarding).
+- Workspace & Collaboration (channels, messaging, calls).
+- Live third-party integrations of any kind (payments, LLM, email/SMS, maps, analytics, video, storage beyond Supabase).
+- Automated tests (unit/integration/e2e) — zero exist.
+- CI/CD pipeline — none exists.
+- Client-side RBAC hook/component layer (`src/core/rbac/` is empty).
+
+Update this file at the end of every session with what was actually shipped, not what was attempted.
