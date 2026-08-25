@@ -92,10 +92,23 @@ Additive only. New tables, new nullable columns on `organizations`. Existing org
 - **Flag remains OFF**: a real end-to-end verification requires clicking through actual Supabase Auth signup in a browser, which this environment cannot safely perform (no way to complete email confirmation, and "Axis" is of unknown production status — not a call to make unilaterally). Per the flag-rollout rule ("if verification fails, leave OFF, document why"), that's treated as a failed verification. See ADR-010 for what *was* verified without live signup (migration applies cleanly, module-defaults join produces correct rows, full compile/typecheck).
 - **Next step, needs a human**: click through `/signup` → `/onboarding` with the flag manually flipped on in a test environment, confirm `organization_type_key`/module flags/audit log all land correctly, then flip `onboarding.industry_registry_picker` to default-on for real.
 
-**Phase 4 — Navigation & Dashboard generation from registry**
-- `AppShell` navigation reads enabled modules from the registry instead of/in addition to today's hardcoded nav.
-- Dashboard reads `organization_type_dashboard_config` for widget selection.
+**Phase 4, slice 1 — Dynamic Experience Engine foundation (done, 2026-08-25)**
+- `organization_types.experience_config` jsonb (`supabase/migrations/0034_experience_config.sql`) — single column, not new tables, holding `kpis` (definitions only), `quickActions`, `emptyStates`. Real content seeded for 6 industries (restaurant, hotel, retail, wholesale, manufacturing, healthcare) taken from concrete user-provided examples; the other 8 intentionally `null`, not guessed.
+- `src/core/industries/{api.ts,hooks.ts}`: `getExperienceConfig()`, `useActiveOrgExperienceConfig()` (resolves via the active org's `organizationTypeKey`).
+- **Wired into real UI**: `DashboardOverview.tsx` renders a dynamic Quick Actions row; `ProductsTable.tsx`'s empty state uses the configured copy when present. Both verified against the live database (3 existing `retail`-type orgs).
+- **Not built this slice** (full reasoning per item in ADR-011, `docs/00_ADOS/DECISIONS.md`): KPI value computation/cards (definitions are stored but nothing computes real numbers — the requested metrics like "Kitchen Orders" or "Occupancy Rate" need backing queries the relevant modules don't support yet), dashboard layout/widget/section generation, Reports Engine (Module Registry has no report-definition concept), Search Engine (no search feature exists in the app at all), AI Experience (no live AI call path exists, same blocker as every prior AI decision), Demo Data Engine, Onboarding Task generation, Platform Owner admin UI for any of this config.
+
+**Phase 4, slice 2 — Navigation generation from registry (not started)**
+- `AppShell` navigation reads enabled modules from the Module Registry instead of/in addition to today's hardcoded nav.
 - Risk: medium (navigation is used by every route) — ship behind a flag, dogfood on one test org first.
+
+**Phase 4, slice 3+ — remaining engines (not started)**
+- KPI value computation (one industry/metric at a time, each needs real backing queries — not a single generic slice).
+- Reports Engine schema design (Module Registry needs a report-definition concept added first).
+- Search Engine (needs to be designed and built from scratch — no existing search feature to extend).
+- Demo Data Engine (per-industry realistic sample data — a content project as much as an engineering one).
+- Help & Onboarding task generation.
+- Platform Owner Portal "Industries" section extended to edit `experience_config` without SQL.
 
 **Phase 5 — Subscription-gated module unlocking**
 - Cross-reference `modules.subscription_requirement` against the org's `plans.module_limits`; auto-enable/disable on plan change.

@@ -24,6 +24,42 @@ export interface OrganizationTypeModule {
   isHidden: boolean;
 }
 
+/**
+ * Dynamic Experience Engine config — Industry Module Engine Phase 4 slice 1
+ * (supabase/migrations/0034_experience_config.sql). Only 6 of 14
+ * organization_types have real seeded content; every field here is
+ * genuinely optional and every consumer must handle "no config" (null,
+ * empty array, missing key) as the normal case, not an error — see ADR-011,
+ * docs/00_ADOS/DECISIONS.md, for exactly which industries have content and
+ * why the rest don't (no fabricated defaults).
+ */
+export interface KpiDefinition {
+  key: string;
+  label: string;
+}
+
+export interface QuickAction {
+  key: string;
+  label: string;
+  route: string;
+}
+
+export interface ExperienceConfig {
+  kpis: KpiDefinition[];
+  quickActions: QuickAction[];
+  emptyStates: Record<string, string>;
+}
+
+function toExperienceConfig(raw: unknown): ExperienceConfig | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Partial<ExperienceConfig>;
+  return {
+    kpis: Array.isArray(r.kpis) ? r.kpis : [],
+    quickActions: Array.isArray(r.quickActions) ? r.quickActions : [],
+    emptyStates: r.emptyStates && typeof r.emptyStates === "object" ? r.emptyStates : {},
+  };
+}
+
 function toOrganizationType(row: {
   key: string;
   name: string;
@@ -62,6 +98,16 @@ export async function listOrganizationTypes(): Promise<OrganizationType[]> {
   const { data, error } = await supabase.from("organization_types").select("*").order("name");
   if (error) throw toAppError(error);
   return (data ?? []).map(toOrganizationType);
+}
+
+export async function getExperienceConfig(organizationTypeKey: string): Promise<ExperienceConfig | null> {
+  const { data, error } = await supabase
+    .from("organization_types")
+    .select("experience_config")
+    .eq("key", organizationTypeKey)
+    .maybeSingle();
+  if (error) throw toAppError(error);
+  return toExperienceConfig(data?.experience_config);
 }
 
 export async function listOrganizationTypeModules(organizationTypeKey: string): Promise<OrganizationTypeModule[]> {

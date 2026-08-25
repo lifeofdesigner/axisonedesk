@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { Button } from "@/shared/components/ui/button";
 import { Skeleton } from "@/shared/components/ui/skeleton";
@@ -8,6 +9,7 @@ import { LowStockPanel } from "@/modules/dashboard/components/LowStockPanel";
 import { TopProductsPanel } from "@/modules/dashboard/components/TopProductsPanel";
 import { useDashboardKpis } from "@/modules/dashboard/hooks";
 import { useCurrentOrganization } from "@/core/tenant/OrganizationProvider";
+import { useActiveOrgExperienceConfig } from "@/core/industries/hooks";
 
 function pctDelta(current: number, previous: number): { delta: string; trend: "up" | "down" } | null {
   if (previous === 0) return null;
@@ -18,6 +20,12 @@ function pctDelta(current: number, previous: number): { delta: string; trend: "u
 export function DashboardOverview() {
   const { activeOrg } = useCurrentOrganization();
   const { data: kpis, isLoading } = useDashboardKpis();
+  // Dynamic Experience Engine (Industry Module Engine Phase 4 slice 1) —
+  // renders only when the active org's type has real seeded quick actions;
+  // absent for orgs with no organization_type_key or an unconfigured type,
+  // by design (see ADR-011, docs/00_ADOS/DECISIONS.md).
+  const { data: experienceConfig } = useActiveOrgExperienceConfig();
+  const quickActions = experienceConfig?.quickActions ?? [];
 
   const cards = kpis
     ? [
@@ -61,6 +69,16 @@ export function DashboardOverview() {
           ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-32 w-full" />)
           : cards.map((kpi) => <KpiCard key={kpi.label} {...kpi} />)}
       </div>
+
+      {quickActions.length > 0 ? (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {quickActions.map((action) => (
+            <Button key={action.key} variant="outline" size="sm" asChild>
+              <Link to={action.route}>{action.label}</Link>
+            </Button>
+          ))}
+        </div>
+      ) : null}
 
       <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
         <div className="xl:col-span-2">

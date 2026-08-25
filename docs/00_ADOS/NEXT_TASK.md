@@ -7,35 +7,28 @@ last_updated: 2026-08-25
 
 > Whoever finishes a task updates this file to point at the next one before ending the session.
 
-## Immediate: needs a human, not more AI-driven implementation
+## Immediate: none in progress
 
-All the code for Industry Module Engine Phase 3b is shipped and live: full onboarding field collection, registry-driven module-defaults application, audit logging, all gated behind `onboarding.industry_registry_picker` (currently OFF). See [ROADMAP.md](ROADMAP.md) and ADR-009/ADR-010 in [DECISIONS.md](DECISIONS.md).
+Industry Module Engine Phase 4 slice 1 (Dynamic Experience Engine foundation) is shipped and live: `organization_types.experience_config`, Quick Actions on the Dashboard, one Empty State instance in Inventory — real, working, verified against the 3 existing `retail`-type organizations. See [ROADMAP.md](ROADMAP.md) and ADR-011 in [DECISIONS.md](DECISIONS.md) for exactly what's built vs. explicitly deferred.
 
-**What's genuinely blocking further automated progress**: flipping the flag to default-on requires a real end-to-end signup through the actual browser UI, confirming:
-1. A new org gets `organization_type_key` set correctly (both via the new registry picker and via the legacy picker's automatic mapping fallback).
-2. `org_feature_flags` rows match the selected organization type's `organization_type_modules` defaults.
-3. The `organization.created` audit log entry appears correctly in `audit_logs`.
-4. The full-profile fields (company size, employees, branches, warehouses, country, timezone, currency, language) persist correctly.
-5. The legacy flow (flag off) still works completely unchanged.
+## Two independent threads, either can go first
 
-This needs a human with legitimate access to a test account against a database it's safe to write test data to (confirm whether "Axis" — the live project this app currently points at — is safe for that, or whether a separate test/staging project should be used instead). Once confirmed:
-```sql
-update public.feature_flags set default_enabled = true where key = 'onboarding.industry_registry_picker';
-```
-or via the Platform Owner Portal's Feature Flags UI (`/feature-flags`).
+**Thread A — Phase 3b flag rollout (unchanged blocker from last session, still needs a human)**: click through real signup in a browser, confirm `organization_type_key`/module flags/audit log/full-profile fields all land correctly, then flip `onboarding.industry_registry_picker` on. See the previous entry in [CHANGELOG.md](CHANGELOG.md) for the exact checklist.
 
-## After the flag is flipped and confirmed working
+**Thread B — Phase 4, next slice**. Recommended order, but not mandated — pick based on product priority:
+1. **Sweep Empty States across more modules** — Orders, CRM, Bookings, Purchasing, HR each likely have their own hardcoded empty-state text; only Inventory was wired this slice as a proof of pattern. Low risk, same pattern, just more files.
+2. **Navigation generation from the Module Registry** (originally "Phase 4" in the playbook, now "Phase 4 slice 2") — `AppShell` reads enabled modules from `modules`/`org_feature_flags` instead of the current hardcoded nav. Medium risk (every route depends on nav) — ship behind a flag.
+3. **KPI value computation, one metric at a time** — pick a single real, computable metric per configured industry (e.g. retail's "Sales" and "Orders" are already computable from existing Orders data) and wire just that, rather than attempting all 5-6 KPIs per industry at once. Metrics with no supporting query yet (Kitchen Orders, Occupancy Rate, Food Cost) need module-level design work first, not just a dashboard change.
+4. **Platform Owner Portal**: extend the Industries section (or build it — verify current state, it may not exist as a UI yet, only as RPCs) to edit `experience_config` without SQL.
 
-**Industry Module Engine Phase 4**: Platform Owner Portal "Industries" management UI + Navigation/Dashboard generation from the registry. Per current instruction, this was explicitly not started this session ("do not begin Navigation Generation. do not begin Module Registry rendering"). This is also where "Dashboard Configuration" (requested but not built in Phase 3b — see ADR-010) would actually get designed and built, once there's a real navigation/dashboard system for it to configure.
-
-**Do not start Phase 4 without explicit instruction.**
+**Not recommended to start yet, each needs real design work first**: Reports Engine (needs a report-definition concept added to the Module Registry), Search Engine (nothing to extend — would be built from scratch), AI Experience (blocked entirely on live AI integration existing at all — see [docs/06_AI/INDEX.md](../06_AI/INDEX.md)), Demo Data Engine (a content-design project, not just code).
 
 ## Also worth doing, not yet prioritized
 
-- Cosmetic follow-up: `OrgSwitcher.tsx`, `SidebarNav.tsx`, `TenantDetailPage.tsx` still display the legacy `businessType` label — deliberately deferred to avoid restyling twice once Phase 4 navigation exists (ADR-009 item 5).
-- Stand up automated testing (currently zero coverage) — see [docs/11_TESTING/INDEX.md](../11_TESTING/INDEX.md). Note: an actual test suite with a seeded test database would have let this session verify the onboarding flow end-to-end without needing a human — worth weighing against other priorities.
+- Cosmetic follow-up: `OrgSwitcher.tsx`, `SidebarNav.tsx`, `TenantDetailPage.tsx` still display the legacy `businessType` label (ADR-009 item 5) — could now also show the organization type's name via the registry, once this is prioritized.
+- Stand up automated testing (currently zero coverage) — see [docs/11_TESTING/INDEX.md](../11_TESTING/INDEX.md). A real test suite with a seeded test database would let sessions verify flows like onboarding end-to-end without needing a human — worth weighing against other priorities.
 - Stand up CI (currently none) — see [docs/12_DEPLOYMENT/INDEX.md](../12_DEPLOYMENT/INDEX.md).
 - Build the client-side RBAC layer described in ARCHITECTURE.md but never implemented (`src/core/rbac/`).
 - Wire a real payment provider — see [docs/08_BILLING/INDEX.md](../08_BILLING/INDEX.md).
-- Wire a real LLM provider for the AI Assistant shell — see [docs/06_AI/INDEX.md](../06_AI/INDEX.md).
+- Wire a real LLM provider for the AI Assistant shell — see [docs/06_AI/INDEX.md](../06_AI/INDEX.md). This also unblocks the AI Experience engine.
 - Enterprise Marketing Website — see [ROADMAP.md](ROADMAP.md), sequenced after Industry Module Engine Foundation.

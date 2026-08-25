@@ -31,6 +31,7 @@ import {
 } from "@/shared/components/ui/alert-dialog";
 import { useState } from "react";
 import { useCategories, useDeleteProduct, useProducts } from "@/modules/inventory/hooks";
+import { useActiveOrgExperienceConfig } from "@/core/industries/hooks";
 import { getStockStatus, type Product } from "@/modules/inventory/types";
 import { StockStatusBadge } from "@/modules/inventory/components/StockStatusBadge";
 import { ProductThumb } from "@/modules/inventory/components/ProductThumb";
@@ -55,6 +56,11 @@ export function ProductsTable({
   });
   const deleteProduct = useDeleteProduct();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  // Dynamic Experience Engine (Industry Module Engine Phase 4 slice 1) —
+  // industry-specific empty-state copy when configured, generic fallback
+  // otherwise. See ADR-011, docs/00_ADOS/DECISIONS.md.
+  const { data: experienceConfig } = useActiveOrgExperienceConfig();
+  const emptyStateTitle = experienceConfig?.emptyStates.inventory || "No products yet";
 
   const categoryMap = useMemo(
     () => new Map((categories ?? []).map((c) => [c.id, c.name])),
@@ -199,7 +205,7 @@ export function ProductsTable({
           ) : (
             <EmptyState
               icon={PackagePlus}
-              title="No products yet"
+              title={emptyStateTitle}
               description="Add your first product to start tracking stock, pricing, and sales."
               action={
                 <Button asChild size="sm">

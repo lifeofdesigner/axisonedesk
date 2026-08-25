@@ -6,6 +6,18 @@ title: Changelog
 
 Human-readable summary, newest first. Machine-verifiable detail is in `git log`; this file explains *why*, not just *what*.
 
+## 2026-08-25 — Dynamic Experience Engine foundation (Industry Engine Phase 4 slice 1)
+
+Added `organization_types.experience_config` jsonb (`0034_experience_config.sql`) — one column, not new tables, per the "no duplicate registries" instruction — holding KPI definitions, quick actions, and empty-state copy. Seeded with real content for 6 industries (restaurant, hotel, retail, wholesale, manufacturing, healthcare) taken directly from the user's own concrete examples; the other 8 industries are deliberately `null`, never a guessed default.
+
+Wired into genuinely working UI, not just stored: the Dashboard now renders a dynamic Quick Actions row from the active org's config, and Inventory's "no products yet" empty state uses the configured copy when available. Both verified against the live database's 3 existing `retail`-type organizations.
+
+The user's request described nine "engines" (Dashboard, KPI, Quick Action, Reports, Search, AI Experience, Empty State, Demo Data, Onboarding Tasks) plus a full Platform Owner admin UI for all of them. Two engines (Quick Action, Empty State) are real and wired this slice. The rest were explicitly not built, each for a documented reason (ADR-011, `DECISIONS.md`) rather than silently skipped: KPI *values* need real per-module backing queries that don't exist yet (only KPI *definitions* are stored); dashboard layout/widget generation is a substantial UI system on its own; the Reports Engine needs new Module Registry schema that doesn't exist; there is no Search feature anywhere in the app to make dynamic; AI Experience is blocked on the same missing live-LLM-integration issue flagged in every prior AI-related decision this session; Demo Data generation is as much a content project as an engineering one; the Platform Owner admin UI for all of this is, on its own, comparable in scope to the entire existing 13-section Platform Owner Portal.
+
+Also: the exact same "create or replace function doesn't replace a function whose parameter list changed" bug from the prior session recurred once more in earlier work this session — this time it prompted an actual playbook update (`docs/16_PLAYBOOKS/CREATE_SUPABASE_RPC.md`) rather than just a one-off fix, so it's now a documented, checkable rule instead of a lesson that has to be relearned.
+
+Build and lint verified passing.
+
 ## 2026-08-25 — Complete onboarding full-profile collection (Industry Engine Phase 3b slice 2)
 
 `create_organization_with_owner()` now persists all 8 remaining onboarding fields requested (company size, employee count, branch count, warehouse count, country, timezone, currency, preferred language), automatically applies the selected organization type's default module configuration from the Phase 2 registry as `org_feature_flags` rows, and logs an `organization.created` audit event (`0032_onboarding_full_profile.sql`). `OnboardingForm.tsx` collects all of it, gated behind the same `onboarding.industry_registry_picker` flag as slice 1 — legacy flow (flag off, the default) is unaffected.

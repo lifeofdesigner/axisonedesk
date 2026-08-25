@@ -29,7 +29,7 @@ Core multi-tenant ERP CRUD + Platform Owner Portal is solid and broad (20 module
 | Media Library | 85% | Functional file manager on existing bucket |
 | Support Center | 85% | Tickets + threads + internal notes |
 | CMS | 80% | Public page management |
-| Industry Module Engine | ~38% | Phases 1, 2, 3a, 3b (both slices) **code-complete and live**: full onboarding field collection, registry-driven module-defaults application, audit logging all shipped, verified as far as possible without live signup (migrations applied cleanly, module-defaults join produces correct rows for a real registry key). **Feature flag deliberately OFF** — full verification needs a human browser signup this environment can't perform (ADR-010); default onboarding behavior is unchanged. Phases 4-6 (navigation/dashboard generation, AI behavior selection, subscription-gated unlocking) not started |
+| Industry Module Engine | ~42% | Phases 1, 2, 3a, 3b (both slices) **code-complete and live**: full onboarding field collection, registry-driven module-defaults application, audit logging all shipped; onboarding feature flag deliberately OFF pending human browser QA (ADR-010). Phase 4 slice 1 **live**: Dynamic Experience Engine foundation (`experience_config`) — Quick Actions and one Empty State instance genuinely wired and working for existing orgs, independent of the onboarding flag. 6 of 9 requested Phase 4 "engines" (KPI values, dashboard layout, Reports, Search, AI, Demo Data) explicitly not built — each blocked on a real system that doesn't exist yet (ADR-011). Phase 4 slice 2+ (navigation generation), Phase 5 (AI behavior), Phase 6 (subscription gating) not started |
 | Workspace & Collaboration | 0% | Not started — planned |
 
 ## Documentation coverage: ~98% (of what exists)
@@ -69,8 +69,9 @@ Beyond production readiness gaps: no Industry Engine (every customer gets the sa
 1. ~~Apply migrations `0026`/`0027` and regenerate `database.types.ts`~~ — done 2026-08-25.
 2. Testing + CI (de-risks everything after it).
 3. Provider Management + one real payment provider (unblocks revenue).
-4. Human browser QA of the new onboarding flow, then flip `onboarding.industry_registry_picker` on — the one remaining blocker on Phase 3b, and a prerequisite for Phase 4 being worth starting — see [NEXT_TASK.md](NEXT_TASK.md) and ADR-010.
-5. Enterprise Marketing Website — after Industry Module Engine Foundation, per [ROADMAP.md](ROADMAP.md).
+4. Human browser QA of the onboarding flow, then flip `onboarding.industry_registry_picker` on — see [NEXT_TASK.md](NEXT_TASK.md) and ADR-010. Independent of Phase 4's progress, not a blocker for it.
+5. Phase 4 slice 2+: sweep Empty States to more modules (low risk, same pattern), navigation generation from the Module Registry (medium risk, flag it), then KPI value computation one real metric at a time — see [NEXT_TASK.md](NEXT_TASK.md).
+6. Enterprise Marketing Website — after Industry Module Engine Foundation, per [ROADMAP.md](ROADMAP.md).
 
 ## Engineering process maturity (new dimension, tracked from this session)
 

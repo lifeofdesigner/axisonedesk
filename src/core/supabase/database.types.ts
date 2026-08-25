@@ -1715,6 +1715,7 @@ export type Database = {
           archived_at: string | null
           created_at: string
           description: string | null
+          experience_config: Json | null
           icon: string | null
           is_system_default: boolean
           key: string
@@ -1725,6 +1726,7 @@ export type Database = {
           archived_at?: string | null
           created_at?: string
           description?: string | null
+          experience_config?: Json | null
           icon?: string | null
           is_system_default?: boolean
           key: string
@@ -1735,6 +1737,7 @@ export type Database = {
           archived_at?: string | null
           created_at?: string
           description?: string | null
+          experience_config?: Json | null
           icon?: string | null
           is_system_default?: boolean
           key?: string
@@ -3231,6 +3234,7 @@ export type Database = {
           archived_at: string | null
           created_at: string
           description: string | null
+          experience_config: Json | null
           icon: string | null
           is_system_default: boolean
           key: string
@@ -3611,6 +3615,7 @@ export type Database = {
           archived_at: string | null
           created_at: string
           description: string | null
+          experience_config: Json | null
           icon: string | null
           is_system_default: boolean
           key: string
