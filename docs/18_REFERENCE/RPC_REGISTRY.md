@@ -55,10 +55,10 @@ Every `create or replace function` in `supabase/migrations/*.sql`, 2026-08-25. W
 ## CMS
 `platform_list_cms_pages()` · `platform_upsert_cms_page(...)` · `platform_delete_cms_page(p_id)` (`0025`)
 
-## Module Registry (written, not yet applied — see `docs/18_REFERENCE/MODULE_REGISTRY.md`)
+## Module Registry (live — see `docs/18_REFERENCE/MODULE_REGISTRY.md`)
 `platform_list_modules()` · `platform_upsert_module(...)` (`0026`)
 
-## Industry / Organization Type Registry (written, not yet applied — see `docs/18_REFERENCE/INDUSTRY_REGISTRY.md`)
+## Industry / Organization Type Registry (live — see `docs/18_REFERENCE/INDUSTRY_REGISTRY.md`)
 `platform_list_organization_types()` · `platform_list_organization_type_modules(p_organization_type_key)` · `platform_upsert_organization_type(...)` · `platform_archive_organization_type(p_key)` · `platform_restore_organization_type(p_key)` · `platform_set_organization_type_module(...)` (`0027`)
 
 ## References

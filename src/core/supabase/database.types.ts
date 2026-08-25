@@ -1070,135 +1070,6 @@ export type Database = {
         }
         Relationships: []
       }
-      modules: {
-        Row: {
-          category: string | null
-          created_at: string
-          dependencies: Json
-          description: string | null
-          display_order: number
-          enabled: boolean
-          feature_flag_key: string | null
-          icon: string | null
-          key: string
-          name: string
-          required_permissions: Json
-          route: string | null
-          subscription_requirement: string | null
-          supported_industries: Json
-          updated_at: string
-        }
-        Insert: {
-          category?: string | null
-          created_at?: string
-          dependencies?: Json
-          description?: string | null
-          display_order?: number
-          enabled?: boolean
-          feature_flag_key?: string | null
-          icon?: string | null
-          key: string
-          name: string
-          required_permissions?: Json
-          route?: string | null
-          subscription_requirement?: string | null
-          supported_industries?: Json
-          updated_at?: string
-        }
-        Update: {
-          category?: string | null
-          created_at?: string
-          dependencies?: Json
-          description?: string | null
-          display_order?: number
-          enabled?: boolean
-          feature_flag_key?: string | null
-          icon?: string | null
-          key?: string
-          name?: string
-          required_permissions?: Json
-          route?: string | null
-          subscription_requirement?: string | null
-          supported_industries?: Json
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      organization_types: {
-        Row: {
-          archived_at: string | null
-          created_at: string
-          description: string | null
-          icon: string | null
-          is_system_default: boolean
-          key: string
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          archived_at?: string | null
-          created_at?: string
-          description?: string | null
-          icon?: string | null
-          is_system_default?: boolean
-          key: string
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          archived_at?: string | null
-          created_at?: string
-          description?: string | null
-          icon?: string | null
-          is_system_default?: boolean
-          key?: string
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      organization_type_modules: {
-        Row: {
-          default_enabled: boolean
-          is_hidden: boolean
-          is_optional: boolean
-          module_key: string
-          organization_type_key: string
-          updated_at: string
-        }
-        Insert: {
-          default_enabled?: boolean
-          is_hidden?: boolean
-          is_optional?: boolean
-          module_key: string
-          organization_type_key: string
-          updated_at?: string
-        }
-        Update: {
-          default_enabled?: boolean
-          is_hidden?: boolean
-          is_optional?: boolean
-          module_key?: string
-          organization_type_key?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "organization_type_modules_module_key_fkey"
-            columns: ["module_key"]
-            isOneToOne: false
-            referencedRelation: "modules"
-            referencedColumns: ["key"]
-          },
-          {
-            foreignKeyName: "organization_type_modules_organization_type_key_fkey"
-            columns: ["organization_type_key"]
-            isOneToOne: false
-            referencedRelation: "organization_types"
-            referencedColumns: ["key"]
-          },
-        ]
-      }
       files: {
         Row: {
           bucket: string
@@ -1352,6 +1223,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      modules: {
+        Row: {
+          category: string | null
+          created_at: string
+          dependencies: Json
+          description: string | null
+          display_order: number
+          enabled: boolean
+          feature_flag_key: string | null
+          icon: string | null
+          key: string
+          name: string
+          required_permissions: Json
+          route: string | null
+          subscription_requirement: string | null
+          supported_industries: Json
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          dependencies?: Json
+          description?: string | null
+          display_order?: number
+          enabled?: boolean
+          feature_flag_key?: string | null
+          icon?: string | null
+          key: string
+          name: string
+          required_permissions?: Json
+          route?: string | null
+          subscription_requirement?: string | null
+          supported_industries?: Json
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          dependencies?: Json
+          description?: string | null
+          display_order?: number
+          enabled?: boolean
+          feature_flag_key?: string | null
+          icon?: string | null
+          key?: string
+          name?: string
+          required_permissions?: Json
+          route?: string | null
+          subscription_requirement?: string | null
+          supported_industries?: Json
+          updated_at?: string
+        }
+        Relationships: []
       }
       notification_channels: {
         Row: {
@@ -1742,6 +1667,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      organization_type_modules: {
+        Row: {
+          default_enabled: boolean
+          is_hidden: boolean
+          is_optional: boolean
+          module_key: string
+          organization_type_key: string
+          updated_at: string
+        }
+        Insert: {
+          default_enabled?: boolean
+          is_hidden?: boolean
+          is_optional?: boolean
+          module_key: string
+          organization_type_key: string
+          updated_at?: string
+        }
+        Update: {
+          default_enabled?: boolean
+          is_hidden?: boolean
+          is_optional?: boolean
+          module_key?: string
+          organization_type_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_type_modules_module_key_fkey"
+            columns: ["module_key"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "organization_type_modules_organization_type_key_fkey"
+            columns: ["organization_type_key"]
+            isOneToOne: false
+            referencedRelation: "organization_types"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      organization_types: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          is_system_default: boolean
+          key: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          is_system_default?: boolean
+          key: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          is_system_default?: boolean
+          key?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       organizations: {
         Row: {
@@ -3126,30 +3126,6 @@ export type Database = {
           status: string
         }[]
       }
-      platform_list_org_roles: {
-        Args: { p_org_id: string }
-        Returns: {
-          id: string
-          is_system_role: boolean
-          name: string
-          permission_ids: string[]
-        }[]
-      }
-      platform_list_permissions: {
-        Args: never
-        Returns: {
-          description: string | null
-          id: string
-          key: string
-          module_key: string
-        }[]
-        SetofOptions: {
-          from: "*"
-          to: "permissions"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
       platform_list_modules: {
         Args: never
         Returns: {
@@ -3175,6 +3151,15 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      platform_list_org_roles: {
+        Args: { p_org_id: string }
+        Returns: {
+          id: string
+          is_system_role: boolean
+          name: string
+          permission_ids: string[]
+        }[]
       }
       platform_list_organization_type_modules: {
         Args: { p_organization_type_key: string }
@@ -3208,6 +3193,21 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "organization_types"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      platform_list_permissions: {
+        Args: never
+        Returns: {
+          description: string | null
+          id: string
+          key: string
+          module_key: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "permissions"
           isOneToOne: false
           isSetofReturn: true
         }
@@ -3514,18 +3514,18 @@ export type Database = {
       }
       platform_upsert_module: {
         Args: {
-          p_category: string | null
+          p_category: string
           p_dependencies: Json
-          p_description: string | null
+          p_description: string
           p_display_order: number
           p_enabled: boolean
-          p_feature_flag_key: string | null
-          p_icon: string | null
+          p_feature_flag_key: string
+          p_icon: string
           p_key: string
           p_name: string
           p_required_permissions: Json
-          p_route: string | null
-          p_subscription_requirement: string | null
+          p_route: string
+          p_subscription_requirement: string
           p_supported_industries: Json
         }
         Returns: {
@@ -3554,8 +3554,8 @@ export type Database = {
       }
       platform_upsert_organization_type: {
         Args: {
-          p_description: string | null
-          p_icon: string | null
+          p_description: string
+          p_icon: string
           p_is_system_default: boolean
           p_key: string
           p_name: string

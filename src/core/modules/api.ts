@@ -62,18 +62,22 @@ export async function listModules(): Promise<ModuleDefinition[]> {
 }
 
 export async function upsertModule(input: ModuleDefinition): Promise<ModuleDefinition> {
+  // Supabase's generated RPC Args type declares these text params as plain
+  // `string`, but the underlying Postgres functions accept null (see
+  // supabase/migrations/0026_module_registry.sql) — the generator doesn't
+  // express scalar-parameter nullability. The casts below are intentional.
   const { data, error } = await supabase.rpc("platform_upsert_module", {
     p_key: input.key,
     p_name: input.name,
-    p_description: input.description,
-    p_category: input.category,
-    p_icon: input.icon,
-    p_route: input.route,
+    p_description: input.description as string,
+    p_category: input.category as string,
+    p_icon: input.icon as string,
+    p_route: input.route as string,
     p_dependencies: input.dependencies,
     p_required_permissions: input.requiredPermissions,
-    p_feature_flag_key: input.featureFlagKey,
+    p_feature_flag_key: input.featureFlagKey as string,
     p_supported_industries: input.supportedIndustries,
-    p_subscription_requirement: input.subscriptionRequirement,
+    p_subscription_requirement: input.subscriptionRequirement as string,
     p_display_order: input.displayOrder,
     p_enabled: input.enabled,
   });

@@ -75,11 +75,13 @@ export async function listOrganizationTypeModules(organizationTypeKey: string): 
 }
 
 export async function upsertOrganizationType(input: Omit<OrganizationType, "archivedAt">): Promise<OrganizationType> {
+  // See the comment in src/core/modules/api.ts upsertModule — same
+  // generated-Args-nullability caveat applies here.
   const { data, error } = await supabase.rpc("platform_upsert_organization_type", {
     p_key: input.key,
     p_name: input.name,
-    p_description: input.description,
-    p_icon: input.icon,
+    p_description: input.description as string,
+    p_icon: input.icon as string,
     p_is_system_default: input.isSystemDefault,
   });
   if (error) throw toAppError(error);

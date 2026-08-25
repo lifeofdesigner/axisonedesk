@@ -7,6 +7,14 @@ last_updated: 2026-08-25
 
 Each entry: context, decision, consequences. Add new ADRs at the top (most recent first).
 
+## ADR-007 — 2026-08-25: Apply migrations 0026-0027 once DB access was restored, without expanding scope
+
+**Context**: ADR-005 and ADR-006 both scoped their milestones narrowly partly *because* this environment had no authenticated Supabase CLI access to the "Axis" project — deferring `router.tsx`/`organizations` changes reduced risk on unverifiable code. Later the same day, the user re-authenticated the CLI to the correct account, and `supabase link`/`db push` succeeded.
+
+**Decision**: Apply exactly the two already-written, already-reviewed migrations (`0026`, `0027`) as-is — no scope was added just because verification became possible. Regenerated `database.types.ts` via CLI and reconciled it against the hand-authored version (found byte-identical in content; one real correction taken: RPC scalar `Args` are non-nullable `string`, fixed with explicit casts in `src/core/modules/api.ts` and `src/core/industries/api.ts`, since the underlying SQL functions do accept null).
+
+**Consequences**: ADR-005's and ADR-006's scoping reasoning (defer `router.tsx` and `organizations` changes to their own later milestones) stands independent of DB access — that was a risk-management choice about blast radius, not a workaround for missing credentials, so it wasn't revisited just because the blocker cleared. The Module and Industry/Org-Type Registries are now genuinely live and independently verified (12 modules, 14 org types, 42 mappings, admin-only RPC write access confirmed by direct query) rather than merely reviewed-on-paper.
+
 ## ADR-006 — 2026-08-25: Seed only the 14 system-default industry templates, not the full 29-item target list; don't touch `organizations`
 
 **Context**: [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) Phase 2 calls for an Industry/Org-Type Registry with a target list that includes both a "system-default" set (Manufacturing, Retail, etc. — 14 industries) and a broader "Platform Owner can create entirely new types" set (Law Firm, Church, NGO, etc. — 15 more, per the Organization Type Library concept). The 9 industries with the highest-confidence module mapping were already documented with proposed defaults in [docs/18_REFERENCE/INDUSTRY_REGISTRY.md](../18_REFERENCE/INDUSTRY_REGISTRY.md); the other 20 either lack a researched mapping or belong to the "created later without code changes" category by design.
