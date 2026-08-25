@@ -71,10 +71,15 @@ Additive only. New tables, new nullable columns on `organizations`. Existing org
 - Seed system-default templates: Manufacturing, Retail, Wholesale, Restaurant, Hotel, Construction, Healthcare, Pharmacy, Logistics, Agriculture, Education, Professional Services, E-commerce, Custom.
 - Risk: low (additive, no gating changes yet).
 
-**Phase 3 — Onboarding rewrite**
-- Extend `/onboarding` to collect industry/company size/branches/warehouses/country/timezone/currency/language.
+**Phase 3a — `organizations` schema extension (done, 2026-08-25)**
+- `supabase/migrations/0028_organization_type_columns.sql` added `organization_type_key` (FK to `organization_types`), `company_size`, `employee_count`, `branch_count`, `warehouse_count`, `country`, `preferred_language` — all nullable, no backfill. `timezone`/`currency` already existed on `organizations` since `0001_init.sql`, not duplicated.
+- **Important finding, discovered while scoping this**: `organizations.business_type` already exists and is already collected by `/onboarding` today (`src/core/tenant/components/OnboardingForm.tsx`) — but as an uncontrolled free-text value from a hardcoded 11-item list (retail, fashion, supermarket, restaurant, pharmacy, warehouse, logistics, hotel, school, sme, wholesale) that has never been wired to module gating and only partially overlaps the 14 keys in `organization_types`. Phase 3b must decide the reconciliation strategy (map old values to new keys? deprecate `business_type`? run both temporarily?) — don't design that reconciliation casually, it affects every existing org's data.
+
+**Phase 3b — Onboarding rewrite (not started)**
+- Extend `/onboarding` to collect industry (now via `organization_type_key`, replacing or supplementing the free-text `business_type` picker — see the reconciliation note above) plus company size/branches/warehouses/country/preferred language (timezone/currency already collectible, columns pre-existed).
 - On submit: create org with new columns populated, apply the selected `organization_type`'s module set (write `org_feature_flags` rows), seed default roles/permissions for that type, apply dashboard config, create default departments if that concept is added.
-- Risk: medium — this is the highest-blast-radius phase (auth-adjacent, first-run critical path). Test the full signup→workspace flow manually before shipping. Rollback: feature-flag the new onboarding step; fall back to the old minimal flow.
+- `create_organization_with_owner()` (`0001_init.sql`/`0009_billing.sql`) will need a new signature or a companion RPC to accept and persist the new fields — extend it rather than replacing it, following the repo's existing "redefine via `create or replace function`" convention.
+- Risk: medium-high — this is the highest-blast-radius phase (auth-adjacent, first-run critical path). Test the full signup→workspace flow manually before shipping. Rollback: feature-flag the new onboarding step; fall back to the old minimal flow.
 
 **Phase 4 — Navigation & Dashboard generation from registry**
 - `AppShell` navigation reads enabled modules from the registry instead of/in addition to today's hardcoded nav.

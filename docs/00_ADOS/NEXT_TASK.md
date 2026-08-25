@@ -9,13 +9,17 @@ last_updated: 2026-08-25
 
 ## Immediate: none in progress
 
-Industry Module Engine Phase 1 (Module Registry) and Phase 2 (Industry/Org-Type Registry + Templates) are both **shipped and live**: `supabase/migrations/0026_module_registry.sql` and `0027_industry_registry.sql` are applied to the "Axis" project, `database.types.ts` is CLI-regenerated and verified, and the seeded data/RPC admin-checks were confirmed by direct query. See [ROADMAP.md](ROADMAP.md) "In Progress — Industry Module Engine" and ADR-005/ADR-006 in [DECISIONS.md](DECISIONS.md). Per the Incremental Delivery Rule in [AI_INSTRUCTIONS.md](AI_INSTRUCTIONS.md), the session stopped there rather than continuing into Phase 3.
+Industry Module Engine Phases 1, 2, and 3a are shipped and live: Module Registry (`0026`), Industry/Org-Type Registry (`0027`), and `organizations`' new nullable columns (`0028_organization_type_columns.sql`, including `organization_type_key`). All three migrations applied to the "Axis" project and verified by direct query. See [ROADMAP.md](ROADMAP.md) and ADR-005/006/007/008 in [DECISIONS.md](DECISIONS.md). Per the Incremental Delivery Rule in [AI_INSTRUCTIONS.md](AI_INSTRUCTIONS.md), the session stopped there.
 
 ## Recommended next task (awaiting go-ahead)
 
-**Industry Module Engine, Phase 3: Onboarding wizard rewrite.**
+**Industry Module Engine, Phase 3b: Onboarding wizard rewrite.**
 
-See [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) — extend `/onboarding` to collect industry/company size/branches/warehouses/country/timezone/currency/language, add `organization_type_key` (+ the other new columns) to `organizations`, and apply the selected type's module/role/dashboard defaults on org creation. This is explicitly the **highest-blast-radius** phase in the whole Industry Engine plan (auth-adjacent, first-run critical path) — per [docs/00_ADOS/RISK_REGISTER.md](../00_ADOS/RISK_REGISTER.md) and [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md)'s own risk note, it should be built behind a flag with the old minimal onboarding as a fallback, not a hard cutover. **Do not start without explicit instruction.** Unlike the last two milestones, DB access is now confirmed working — verify with `supabase migration list` at the start of that session rather than assuming, since CLI auth state could change again between sessions.
+See [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) Phase 3b for the full scope. This is the **highest-blast-radius phase in the whole plan** (auth-adjacent, first-run critical path) — build behind a feature flag with the current onboarding as fallback, not a hard cutover.
+
+**Read this before starting**: `organizations.business_type` already exists and is already collected by the current `/onboarding` flow (`src/core/tenant/components/OnboardingForm.tsx`) as a free-text value from a hardcoded 11-item list (retail, fashion, supermarket, restaurant, pharmacy, warehouse, logistics, hotel, school, sme, wholesale) — it was never wired to module gating and only partially overlaps the 14 keys in `organization_types`. Phase 3b's first real decision is how to reconcile the two: map old values 1:1 where they match (retail, restaurant, pharmacy, hotel, wholesale) and treat the rest as `custom` or unset? Deprecate `business_type` entirely in favor of `organization_type_key`? Run both temporarily? This needs a deliberate decision recorded as an ADR before writing code, not something decided implicitly by whatever the first implementation happens to do.
+
+**Do not start without explicit instruction.**
 
 ## Other candidates, not prioritized
 

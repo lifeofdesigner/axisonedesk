@@ -7,6 +7,14 @@ last_updated: 2026-08-25
 
 Each entry: context, decision, consequences. Add new ADRs at the top (most recent first).
 
+## ADR-008 — 2026-08-25: Split Industry Engine Phase 3 into 3a (schema) and 3b (onboarding rewrite); don't touch onboarding or `business_type` yet
+
+**Context**: [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) Phase 3 originally described one combined step: extend `organizations`' schema *and* rewrite `/onboarding` to use it, in one milestone. While scoping this, auditing the actual onboarding code revealed `organizations.business_type` already exists and is already collected by `OnboardingForm.tsx` as an uncontrolled free-text value (11 hardcoded options) that only partially overlaps the 14 keys seeded into `organization_types` by `0027_industry_registry.sql` — and was never wired to module gating at all.
+
+**Decision**: Split Phase 3 into 3a (this milestone: add `organization_type_key` + 6 other nullable columns to `organizations`, no backfill, no UI change) and 3b (a future milestone: the actual onboarding rewrite, including deciding how to reconcile `business_type` with `organization_type_key`). Do not attempt the `business_type` reconciliation as a quick aside inside a schema migration — it affects every existing org's data and deserves its own deliberate design pass, not a decision made in passing while adding columns.
+
+**Consequences**: Consistent with ADR-005/ADR-006's precedent of keeping each milestone narrow. `organizations` now has the columns Phase 3b needs, verified live, with zero behavior change to onboarding — a user signing up today still goes through the exact same flow as before this migration. Phase 3b inherits a known, documented complication (the `business_type` overlap) instead of discovering it under time pressure mid-rewrite.
+
 ## ADR-007 — 2026-08-25: Apply migrations 0026-0027 once DB access was restored, without expanding scope
 
 **Context**: ADR-005 and ADR-006 both scoped their milestones narrowly partly *because* this environment had no authenticated Supabase CLI access to the "Axis" project — deferring `router.tsx`/`organizations` changes reduced risk on unverifiable code. Later the same day, the user re-authenticated the CLI to the correct account, and `supabase link`/`db push` succeeded.

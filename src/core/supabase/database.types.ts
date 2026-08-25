@@ -1745,51 +1745,80 @@ export type Database = {
       }
       organizations: {
         Row: {
+          branch_count: number | null
           business_type: string
+          company_size: string | null
+          country: string | null
           created_at: string
           currency: string
           deleted_at: string | null
+          employee_count: number | null
           id: string
           logo_url: string | null
           name: string
+          organization_type_key: string | null
+          preferred_language: string | null
           primary_color: string | null
           slug: string
           status: Database["public"]["Enums"]["organization_status"]
           stripe_customer_id: string | null
           timezone: string
           updated_at: string
+          warehouse_count: number | null
         }
         Insert: {
+          branch_count?: number | null
           business_type: string
+          company_size?: string | null
+          country?: string | null
           created_at?: string
           currency?: string
           deleted_at?: string | null
+          employee_count?: number | null
           id?: string
           logo_url?: string | null
           name: string
+          organization_type_key?: string | null
+          preferred_language?: string | null
           primary_color?: string | null
           slug: string
           status?: Database["public"]["Enums"]["organization_status"]
           stripe_customer_id?: string | null
           timezone?: string
           updated_at?: string
+          warehouse_count?: number | null
         }
         Update: {
+          branch_count?: number | null
           business_type?: string
+          company_size?: string | null
+          country?: string | null
           created_at?: string
           currency?: string
           deleted_at?: string | null
+          employee_count?: number | null
           id?: string
           logo_url?: string | null
           name?: string
+          organization_type_key?: string | null
+          preferred_language?: string | null
           primary_color?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["organization_status"]
           stripe_customer_id?: string | null
           timezone?: string
           updated_at?: string
+          warehouse_count?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "organizations_organization_type_key_fkey"
+            columns: ["organization_type_key"]
+            isOneToOne: false
+            referencedRelation: "organization_types"
+            referencedColumns: ["key"]
+          },
+        ]
       }
       permissions: {
         Row: {
