@@ -4,6 +4,12 @@ import { toAppError } from "@/core/error/AppError";
 export interface CreateOrganizationInput {
   name: string;
   businessType: string;
+  /**
+   * organization_types.key, set when the onboarding.industry_registry_picker
+   * flag is on (see OnboardingForm) — otherwise omitted, matching pre-Phase-3b
+   * behavior exactly. See docs/00_ADOS/DECISIONS.md ADR-009.
+   */
+  organizationTypeKey?: string;
 }
 
 export async function createOrganization(input: CreateOrganizationInput) {
@@ -13,6 +19,7 @@ export async function createOrganization(input: CreateOrganizationInput) {
     org_name: input.name,
     org_slug: slug,
     org_business_type: input.businessType,
+    p_organization_type_key: input.organizationTypeKey,
   });
 
   if (error) throw toAppError(error);
@@ -24,6 +31,13 @@ export interface MyOrganization {
   name: string;
   slug: string;
   businessType: string;
+  /**
+   * Canonical organization classification (docs/00_ADOS/DECISIONS.md
+   * ADR-009) — always set for every org since 0031_canonical_organization_
+   * type.sql's backfill + create_organization_with_owner's fallback
+   * mapping. businessType above is legacy-compatibility only; prefer this.
+   */
+  organizationTypeKey: string | null;
   status: string;
 }
 
@@ -35,7 +49,7 @@ export interface MyOrganization {
 export async function listMyOrganizations(): Promise<MyOrganization[]> {
   const { data, error } = await supabase
     .from("organization_members")
-    .select("organizations(id, name, slug, business_type, status)")
+    .select("organizations(id, name, slug, business_type, organization_type_key, status)")
     .eq("status", "active");
 
   if (error) throw toAppError(error);
@@ -48,6 +62,7 @@ export async function listMyOrganizations(): Promise<MyOrganization[]> {
       name: org.name,
       slug: org.slug,
       businessType: org.business_type,
+      organizationTypeKey: org.organization_type_key,
       status: org.status,
     }));
 }

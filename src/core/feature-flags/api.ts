@@ -6,6 +6,21 @@
 import { supabase } from "@/core/supabase/client";
 import { toAppError } from "@/core/error/AppError";
 
+/**
+ * Reads a single global (non-module) flag's default_enabled value directly
+ * — used pre-org (e.g. onboarding, before an org/activeOrgId exists), where
+ * getEnabledModuleKeys' org-scoped override lookup doesn't apply.
+ */
+export async function getGlobalFlag(key: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("feature_flags")
+    .select("default_enabled")
+    .eq("key", key)
+    .maybeSingle();
+  if (error) throw toAppError(error);
+  return data?.default_enabled ?? false;
+}
+
 export async function getEnabledModuleKeys(orgId: string): Promise<Set<string>> {
   const { data: flags, error: flagsError } = await supabase
     .from("feature_flags")

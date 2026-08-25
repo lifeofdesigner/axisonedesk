@@ -32,6 +32,8 @@ export interface PlatformOrganization {
   name: string;
   slug: string;
   businessType: string;
+  /** Canonical classification — see docs/00_ADOS/DECISIONS.md ADR-009. Prefer over businessType. */
+  organizationTypeKey: string | null;
   status: OrganizationStatus;
   createdAt: string;
   deletedAt: string | null;
@@ -117,12 +119,13 @@ export async function listOrganizations(): Promise<PlatformOrganization[]> {
   return (data as {
     id: string; name: string; slug: string; business_type: string;
     status: OrganizationStatus; created_at: string; deleted_at: string | null;
-    plan_name: string | null; member_count: number;
+    plan_name: string | null; member_count: number; organization_type_key: string | null;
   }[]).map((r) => ({
     id: r.id,
     name: r.name,
     slug: r.slug,
     businessType: r.business_type,
+    organizationTypeKey: r.organization_type_key,
     status: r.status,
     createdAt: r.created_at,
     deletedAt: r.deleted_at,
@@ -138,6 +141,7 @@ export async function getOrganizationDetail(orgId: string): Promise<PlatformOrga
   const d = data as {
     organization: {
       id: string; name: string; slug: string; business_type: string;
+      organization_type_key: string | null;
       status: OrganizationStatus; created_at: string; deleted_at: string | null;
       logo_url: string | null; primary_color: string | null;
     };
@@ -151,6 +155,7 @@ export async function getOrganizationDetail(orgId: string): Promise<PlatformOrga
       name: d.organization.name,
       slug: d.organization.slug,
       businessType: d.organization.business_type,
+      organizationTypeKey: d.organization.organization_type_key,
       status: d.organization.status,
       createdAt: d.organization.created_at,
       deletedAt: d.organization.deleted_at,

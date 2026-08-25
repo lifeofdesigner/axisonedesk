@@ -33,6 +33,7 @@ export async function getOrgProfile(orgId: string): Promise<OrgProfile> {
     name: row.name,
     slug: row.slug,
     businessType: row.business_type,
+    organizationTypeKey: row.organization_type_key,
     timezone: row.timezone,
     currency: row.currency,
     status: row.status,

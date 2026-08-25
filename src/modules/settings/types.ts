@@ -3,6 +3,8 @@ export interface OrgProfile {
   name: string;
   slug: string;
   businessType: string;
+  /** Canonical classification — see docs/00_ADOS/DECISIONS.md ADR-009. Prefer over businessType. */
+  organizationTypeKey: string | null;
   timezone: string;
   currency: string;
   status: string;

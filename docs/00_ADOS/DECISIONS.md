@@ -7,6 +7,36 @@ last_updated: 2026-08-25
 
 Each entry: context, decision, consequences. Add new ADRs at the top (most recent first).
 
+## ADR-009 — 2026-08-25: `organization_type_key` is the canonical Source of Truth for organization classification; `business_type` is legacy-compatibility only
+
+**Context**: ADR-008 flagged, but deliberately deferred, the question of how `business_type` (existing, not-null, still actively read by five files: `src/core/tenant/api.ts`, `src/core/platform-admin/api.ts`, `src/modules/platform-admin/TenantDetailPage.tsx`, `src/modules/settings/api.ts`, and displayed in `src/shared/components/layout/OrgSwitcher.tsx`/`SidebarNav.tsx`) relates to `organization_type_key`. The user then gave an explicit architecture directive: `organization_type_key` becomes the only canonical identifier going forward; `business_type` becomes legacy-compatibility only; no new code should depend on it; existing organizations must be safely backfilled, not left null; nothing about `business_type` may be destructively removed without first auditing that it's fully unused.
+
+**Decision**:
+1. **Mapping** (single Source of Truth: `public.map_business_type_to_organization_type_key(text) returns text`, `supabase/migrations/0031_canonical_organization_type.sql`), applied consistently everywhere the mapping is needed rather than duplicated inline:
+
+   | Legacy `business_type` | Canonical `organization_type_key` | Reasoning |
+   |---|---|---|
+   | `retail` | `retail` | direct match |
+   | `fashion` | `retail` | fashion retail is a retail subtype; no dedicated registry entry |
+   | `supermarket` | `retail` | same reasoning |
+   | `restaurant` | `restaurant` | direct match |
+   | `pharmacy` | `pharmacy` | direct match |
+   | `warehouse` | `wholesale` | warehousing/distribution operations map to the wholesale registry entry |
+   | `wholesale` | `wholesale` | direct match |
+   | `logistics` | `logistics` | direct match |
+   | `hotel` | `hotel` | direct match |
+   | `school` | `education` | direct match by concept, different key spelling |
+   | `sme` | `custom` | **deliberate deviation** from the user-suggested default of "Professional Services": `sme` was the picker's explicit generic/fallback option ("General SME"), not a services-industry signal — forcing it into Professional Services would misclassify e.g. a small manufacturer or retailer who picked the generic option. `custom` (the registry's explicit "no preset defaults" entry) is the honest mapping for an uncontrolled catch-all. |
+   | *(any other/unforeseen value)* | `custom` | defensive fallback — `business_type` has no DB check constraint, so a value outside the 11-item picker is theoretically possible even though unreachable via the current UI |
+
+2. **Backfill**: every existing organization with `organization_type_key is null` gets it set via the mapping (`update ... where organization_type_key is null`) — additive only, `business_type` untouched, reversible (nulling `organization_type_key` back out loses nothing since `business_type` still holds the original value). Verified against the live database: all 3 existing orgs (all `business_type = 'retail'`) correctly backfilled to `organization_type_key = 'retail'`.
+3. **Every new organization, from this migration forward, always gets `organization_type_key` populated** — `create_organization_with_owner` now resolves it via `coalesce(p_organization_type_key, map_business_type_to_organization_type_key(org_business_type))`, so this holds true whether the caller explicitly passes a key (the flagged registry picker from `0029_onboarding_industry_picker.sql`) or not (today's default, unflagged path). This means `organization_type_key` is reliably non-null for every org, old and new, without requiring the still-unverified new onboarding UI to be turned on first.
+4. **API/type layer updated to surface `organization_type_key` everywhere `business_type` is currently surfaced** (`src/core/tenant/api.ts`, `src/core/platform-admin/api.ts`, `src/modules/settings/api.ts`/`types.ts`, plus `list_platform_organizations()` extended with a trailing column — `get_platform_organization()` needed no change since it already returns `to_jsonb(o.*)`), each marked with a comment pointing at this ADR and instructing new code to prefer it.
+5. **Display components deliberately NOT changed this pass**: `OrgSwitcher.tsx`, `SidebarNav.tsx`, `TenantDetailPage.tsx` still render `businessType` as their label text. This is cosmetic-only (a lowercase capitalized string in the nav), not a data-correctness or architecture concern, and real Industry Engine-driven navigation is Phase 4's job — restyling these labels now, before Phase 4 exists, would likely be thrown away and redone. Tracked as a follow-up in `docs/00_ADOS/NEXT_TASK.md`, not silently skipped.
+6. **`business_type` is not removed, deprecated in the schema, or stopped being written** — it remains a required column, still populated on every insert (unchanged), still read by existing platform-admin RPCs. Per the user's explicit instruction, removal is a future major-version roadmap item, only after an audit proves zero remaining usage — not attempted now.
+
+**Consequences**: `organization_type_key` is now reliably populated and available end-to-end (DB, RPCs, API layer) for every organization, satisfying "every new feature must reference `organization_type_key`" for anything built from this point forward (Module Registry gating, dashboards, permissions, AI behavior, navigation, etc. — none of which are built yet, but none of them will need to invent their own mapping when they are). `business_type` keeps working exactly as before for every existing consumer — zero breaking changes. The one open follow-up is the cosmetic nav-label sweep (item 5), explicitly deferred rather than rushed.
+
 ## ADR-008 — 2026-08-25: Split Industry Engine Phase 3 into 3a (schema) and 3b (onboarding rewrite); don't touch onboarding or `business_type` yet
 
 **Context**: [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) Phase 3 originally described one combined step: extend `organizations`' schema *and* rewrite `/onboarding` to use it, in one milestone. While scoping this, auditing the actual onboarding code revealed `organizations.business_type` already exists and is already collected by `OnboardingForm.tsx` as an uncontrolled free-text value (11 hardcoded options) that only partially overlaps the 14 keys seeded into `organization_types` by `0027_industry_registry.sql` — and was never wired to module gating at all.

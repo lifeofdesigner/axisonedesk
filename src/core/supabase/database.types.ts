@@ -2967,7 +2967,12 @@ export type Database = {
         }
       }
       create_organization_with_owner: {
-        Args: { org_business_type: string; org_name: string; org_slug: string }
+        Args: {
+          org_business_type: string
+          org_name: string
+          org_slug: string
+          p_organization_type_key?: string
+        }
         Returns: string
       }
       current_org_ids: { Args: never; Returns: string[] }
@@ -2991,6 +2996,7 @@ export type Database = {
           id: string
           member_count: number
           name: string
+          organization_type_key: string
           plan_name: string
           slug: string
           status: Database["public"]["Enums"]["organization_status"]
@@ -3005,6 +3011,10 @@ export type Database = {
           p_org_id: string
         }
         Returns: undefined
+      }
+      map_business_type_to_organization_type_key: {
+        Args: { p_business_type: string }
+        Returns: string
       }
       notify_org_members: {
         Args: {

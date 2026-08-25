@@ -21,6 +21,8 @@ import { toast } from "sonner";
 
 import { createOrganization } from "@/core/tenant/api";
 import { organizationsQueryKey } from "@/core/tenant/OrganizationProvider";
+import { useGlobalFlag } from "@/core/feature-flags/hooks";
+import { useOrganizationTypes } from "@/core/industries/hooks";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import {
@@ -32,6 +34,13 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { cn } from "@/shared/lib/utils";
+
+// Flag key from supabase/migrations/0029_onboarding_industry_picker.sql —
+// off by default, see ADR-009 in docs/00_ADOS/DECISIONS.md. When on, the
+// picker below is replaced with one backed by the real organization_types
+// registry (docs/18_REFERENCE/INDUSTRY_REGISTRY.md) instead of this legacy
+// hardcoded list. This legacy list and its values are unchanged either way.
+const INDUSTRY_REGISTRY_PICKER_FLAG = "onboarding.industry_registry_picker";
 
 const businessTypes = [
   { value: "retail", label: "Retail Store", icon: ShoppingBag },
@@ -59,6 +68,10 @@ export function OnboardingForm() {
   const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
 
+  const { data: useRegistryPicker } = useGlobalFlag(INDUSTRY_REGISTRY_PICKER_FLAG);
+  const { data: organizationTypes } = useOrganizationTypes();
+  const registryOptions = (organizationTypes ?? []).filter((t) => !t.archivedAt);
+
   const form = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: { organizationName: "", businessType: "" },
@@ -70,6 +83,10 @@ export function OnboardingForm() {
       await createOrganization({
         name: values.organizationName,
         businessType: values.businessType,
+        // Only set when the registry picker is actually in use — selected
+        // value is one of organization_types.key in that case, matching
+        // business_type 1:1 by construction. See ADR-009.
+        organizationTypeKey: useRegistryPicker ? values.businessType : undefined,
       });
       toast.success("Organization created", {
         description: `${values.organizationName} is ready to go.`,
@@ -113,31 +130,56 @@ export function OnboardingForm() {
               <FormLabel>What best describes your business?</FormLabel>
               <FormControl>
                 <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                  {businessTypes.map((type) => {
-                    const Icon = type.icon;
-                    const selected = field.value === type.value;
-                    return (
-                      <button
-                        key={type.value}
-                        type="button"
-                        onClick={() => field.onChange(type.value)}
-                        className={cn(
-                          "flex flex-col items-start gap-2 rounded-lg border p-3 text-left transition-colors",
-                          selected
-                            ? "border-primary bg-accent ring-primary ring-1"
-                            : "border-border hover:bg-muted/50",
-                        )}
-                      >
-                        <Icon
-                          className={cn(
-                            "size-4.5",
-                            selected ? "text-primary" : "text-muted-foreground",
-                          )}
-                        />
-                        <span className="text-sm font-medium">{type.label}</span>
-                      </button>
-                    );
-                  })}
+                  {useRegistryPicker
+                    ? registryOptions.map((type) => {
+                        const selected = field.value === type.key;
+                        return (
+                          <button
+                            key={type.key}
+                            type="button"
+                            onClick={() => field.onChange(type.key)}
+                            className={cn(
+                              "flex flex-col items-start gap-2 rounded-lg border p-3 text-left transition-colors",
+                              selected
+                                ? "border-primary bg-accent ring-primary ring-1"
+                                : "border-border hover:bg-muted/50",
+                            )}
+                          >
+                            <Building2
+                              className={cn(
+                                "size-4.5",
+                                selected ? "text-primary" : "text-muted-foreground",
+                              )}
+                            />
+                            <span className="text-sm font-medium">{type.name}</span>
+                          </button>
+                        );
+                      })
+                    : businessTypes.map((type) => {
+                        const Icon = type.icon;
+                        const selected = field.value === type.value;
+                        return (
+                          <button
+                            key={type.value}
+                            type="button"
+                            onClick={() => field.onChange(type.value)}
+                            className={cn(
+                              "flex flex-col items-start gap-2 rounded-lg border p-3 text-left transition-colors",
+                              selected
+                                ? "border-primary bg-accent ring-primary ring-1"
+                                : "border-border hover:bg-muted/50",
+                            )}
+                          >
+                            <Icon
+                              className={cn(
+                                "size-4.5",
+                                selected ? "text-primary" : "text-muted-foreground",
+                              )}
+                            />
+                            <span className="text-sm font-medium">{type.label}</span>
+                          </button>
+                        );
+                      })}
                 </div>
               </FormControl>
               <FormMessage />

@@ -29,7 +29,7 @@ Core multi-tenant ERP CRUD + Platform Owner Portal is solid and broad (20 module
 | Media Library | 85% | Functional file manager on existing bucket |
 | Support Center | 85% | Tickets + threads + internal notes |
 | CMS | 80% | Public page management |
-| Industry Module Engine | ~25% | Phases 1, 2, 3a **live and verified** against the real database (12 modules, 14 org types, 42 mappings, `organizations` has the new nullable columns, admin-only RPC writes confirmed); `organizations.business_type` vs `organization_type_key` reconciliation still undecided (see ADR-008); `src/router.tsx` and `/onboarding` not yet wired to any of this — Phase 3b (highest-risk phase) and 4-6 not started |
+| Industry Module Engine | ~32% | Phases 1, 2, 3a, 3b-slice-1 **live and verified** against the real database — `organization_type_key` is now the canonical Source of Truth (ADR-009), every org (all 3 existing + all future) guaranteed to have it populated, `business_type` demoted to legacy-only; `src/router.tsx` and the onboarding UI's default behavior remain unchanged (flag OFF); 3b-slice-2 (remaining fields, flag rollout, requires human browser QA) and Phases 4-6 not started |
 | Workspace & Collaboration | 0% | Not started — planned |
 
 ## Documentation coverage: ~98% (of what exists)
@@ -69,7 +69,7 @@ Beyond production readiness gaps: no Industry Engine (every customer gets the sa
 1. ~~Apply migrations `0026`/`0027` and regenerate `database.types.ts`~~ — done 2026-08-25.
 2. Testing + CI (de-risks everything after it).
 3. Provider Management + one real payment provider (unblocks revenue).
-4. Industry Module Engine Phase 3b (onboarding wizard rewrite) — highest blast radius phase, build behind a flag, must first decide the `business_type`/`organization_type_key` reconciliation strategy (ADR-008) — see [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md).
+4. Industry Module Engine Phase 3b slice 2 (remaining onboarding fields + picker flag rollout) — highest blast radius phase remaining, needs human browser QA before flipping `onboarding.industry_registry_picker` on — see [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md).
 5. Enterprise Marketing Website — after Industry Module Engine Foundation, per [ROADMAP.md](ROADMAP.md).
 
 ## Engineering process maturity (new dimension, tracked from this session)

@@ -12,7 +12,7 @@ last_updated: 2026-08-25
 | M2: Platform Owner Portal completeness | Complete | Tenants, audit log, feature flags, branding, subscriptions, users/roles, support, media, notifications, AI provider config, system health, security, dev tools, CMS — through `dbb4b67` |
 | M3: Engineering Operating System (ADOS) | Complete | This documentation system, 2026-08-25 |
 | M3.1: Enterprise Engineering Knowledge Platform (EEKP) | Complete | Playbooks, templates, reference registries, runbooks, governance, patterns, checklists — `docs/16_PLAYBOOKS/` through `docs/25_DIAGRAMS/`, 2026-08-25 |
-| M4: Industry Module Engine | In Progress — Phases 1, 2, 3a shipped and live; Phase 3b (onboarding rewrite) not started | See [ROADMAP.md](ROADMAP.md) and [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md). |
+| M4: Industry Module Engine | In Progress — Phases 1, 2, 3a, 3b-slice-1 (canonical Source of Truth) shipped and live; 3b-slice-2 (remaining onboarding fields, flag rollout) not started | See [ROADMAP.md](ROADMAP.md) and [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md). |
 | M4.1: Enterprise Marketing Website | Planned | After M4 Phase 1. See [ROADMAP.md](ROADMAP.md) "Planned — Enterprise Marketing Website" and [.ai/03_PUBLIC_WEBSITE.md](../../.ai/03_PUBLIC_WEBSITE.md). |
 | M5: Live provider integrations (payments, AI, comms) | Planned | Depends on [14_INTEGRATIONS/PROVIDER_MANAGEMENT.md](../14_INTEGRATIONS/PROVIDER_MANAGEMENT.md) being implemented |
 | M6: Test coverage + CI | Planned | Currently zero on both |
