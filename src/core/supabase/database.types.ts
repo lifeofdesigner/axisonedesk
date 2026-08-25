@@ -39,6 +39,123 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_prompt_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          label: string
+          template: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          label: string
+          template?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          label?: string
+          template?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      ai_providers: {
+        Row: {
+          connected_at: string | null
+          docs_url: string | null
+          is_connected: boolean
+          key: string
+          label: string
+          models: Json
+          notes: string | null
+        }
+        Insert: {
+          connected_at?: string | null
+          docs_url?: string | null
+          is_connected?: boolean
+          key: string
+          label: string
+          models?: Json
+          notes?: string | null
+        }
+        Update: {
+          connected_at?: string | null
+          docs_url?: string | null
+          is_connected?: boolean
+          key?: string
+          label?: string
+          models?: Json
+          notes?: string | null
+        }
+        Relationships: []
+      }
+      ai_usage_logs: {
+        Row: {
+          cost_usd: number
+          created_at: string
+          id: string
+          input_tokens: number
+          model: string | null
+          org_id: string | null
+          output_tokens: number
+          prompt_template_key: string | null
+          provider_key: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cost_usd?: number
+          created_at?: string
+          id?: string
+          input_tokens?: number
+          model?: string | null
+          org_id?: string | null
+          output_tokens?: number
+          prompt_template_key?: string | null
+          provider_key?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cost_usd?: number
+          created_at?: string
+          id?: string
+          input_tokens?: number
+          model?: string | null
+          org_id?: string | null
+          output_tokens?: number
+          prompt_template_key?: string | null
+          provider_key?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_logs_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_logs_provider_key_fkey"
+            columns: ["provider_key"]
+            isOneToOne: false
+            referencedRelation: "ai_providers"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       announcements: {
         Row: {
           body: string
@@ -1534,6 +1651,9 @@ export type Database = {
       platform_settings: {
         Row: {
           accent_color: string
+          active_ai_provider: string | null
+          ai_assistant_enabled: boolean
+          ai_default_model: string | null
           default_company_logo_url: string | null
           favicon_url: string | null
           id: boolean
@@ -1548,6 +1668,9 @@ export type Database = {
         }
         Insert: {
           accent_color?: string
+          active_ai_provider?: string | null
+          ai_assistant_enabled?: boolean
+          ai_default_model?: string | null
           default_company_logo_url?: string | null
           favicon_url?: string | null
           id?: boolean
@@ -1562,6 +1685,9 @@ export type Database = {
         }
         Update: {
           accent_color?: string
+          active_ai_provider?: string | null
+          ai_assistant_enabled?: boolean
+          ai_default_model?: string | null
           default_company_logo_url?: string | null
           favicon_url?: string | null
           id?: boolean
@@ -1574,7 +1700,15 @@ export type Database = {
           support_email?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "platform_settings_active_ai_provider_fkey"
+            columns: ["active_ai_provider"]
+            isOneToOne: false
+            referencedRelation: "ai_providers"
+            referencedColumns: ["key"]
+          },
+        ]
       }
       product_images: {
         Row: {
@@ -2486,6 +2620,16 @@ export type Database = {
         }
         Returns: undefined
       }
+      platform_ai_usage_summary: {
+        Args: never
+        Returns: {
+          call_count: number
+          provider_key: string
+          total_cost_usd: number
+          total_input_tokens: number
+          total_output_tokens: number
+        }[]
+      }
       platform_archive_organization: {
         Args: { p_org_id: string }
         Returns: undefined
@@ -2513,6 +2657,24 @@ export type Database = {
       }
       platform_dashboard_stats: { Args: never; Returns: Json }
       platform_grant_admin: { Args: { p_user_id: string }; Returns: undefined }
+      platform_list_ai_providers: {
+        Args: never
+        Returns: {
+          connected_at: string | null
+          docs_url: string | null
+          is_connected: boolean
+          key: string
+          label: string
+          models: Json
+          notes: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "ai_providers"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       platform_list_audit_logs: {
         Args: { p_limit?: number }
         Returns: {
@@ -2639,6 +2801,10 @@ export type Database = {
         Returns: undefined
       }
       platform_revoke_admin: { Args: { p_user_id: string }; Returns: undefined }
+      platform_set_ai_provider_connected: {
+        Args: { p_is_connected: boolean; p_key: string; p_notes?: string }
+        Returns: undefined
+      }
       platform_set_flag_default: {
         Args: { p_enabled: boolean; p_flag_id: string }
         Returns: undefined
@@ -2659,6 +2825,14 @@ export type Database = {
         Args: {
           p_org_id: string
           p_status: Database["public"]["Enums"]["organization_status"]
+        }
+        Returns: undefined
+      }
+      platform_update_ai_settings: {
+        Args: {
+          p_active_provider: string
+          p_default_model: string
+          p_enabled: boolean
         }
         Returns: undefined
       }
@@ -2688,6 +2862,30 @@ export type Database = {
           p_ticket_id: string
         }
         Returns: undefined
+      }
+      platform_upsert_ai_prompt_template: {
+        Args: {
+          p_description: string
+          p_key: string
+          p_label: string
+          p_template: string
+        }
+        Returns: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          label: string
+          template: string
+          updated_at: string
+          updated_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ai_prompt_templates"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       platform_upsert_coupon: {
         Args: {
@@ -2831,6 +3029,9 @@ export type Database = {
         Args: { p_updates: Json }
         Returns: {
           accent_color: string
+          active_ai_provider: string | null
+          ai_assistant_enabled: boolean
+          ai_default_model: string | null
           default_company_logo_url: string | null
           favicon_url: string | null
           id: boolean
