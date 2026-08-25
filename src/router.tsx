@@ -59,6 +59,10 @@ export const router = createBrowserRouter([
                 path: "/platform-admin/feature-flags",
                 lazy: () => import("@/pages/PlatformFeatureFlagsPage"),
               },
+              {
+                path: "/platform-admin/branding",
+                lazy: () => import("@/pages/PlatformBrandingPage"),
+              },
             ],
           },
         ],

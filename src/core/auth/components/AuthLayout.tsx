@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { BarChart3, Boxes, ShieldCheck, Sparkles } from "lucide-react";
+import { usePlatformSettings } from "@/core/platform-settings/hooks";
 
 const highlights = [
   {
@@ -29,6 +30,13 @@ export function AuthLayout({
   title: string;
   subtitle: string;
 }) {
+  const { data: platformSettings } = usePlatformSettings();
+  const platformName = platformSettings?.platformName ?? "AxisOneDesk";
+  // Page copy is authored with the literal "AxisOneDesk" — swap in the
+  // white-labeled name so per-page subtitles stay in sync with branding
+  // without every page needing to know about platform_settings itself.
+  const brandedSubtitle = subtitle.replace(/AxisOneDesk/g, platformName);
+
   return (
     <div className="bg-background grid min-h-svh lg:grid-cols-2">
       <div className="relative hidden flex-col justify-between overflow-hidden bg-[radial-gradient(circle_at_20%_20%,hsl(243_75%_28%),hsl(222_47%_8%)_60%)] p-10 text-white lg:flex">
@@ -36,9 +44,13 @@ export function AuthLayout({
 
         <div className="relative flex items-center gap-2">
           <div className="flex size-8 items-center justify-center rounded-lg bg-white/10 backdrop-blur">
-            <Sparkles className="size-4" />
+            {platformSettings?.logoUrl ? (
+              <img src={platformSettings.logoUrl} alt="" className="size-5 object-contain" />
+            ) : (
+              <Sparkles className="size-4" />
+            )}
           </div>
-          <span className="text-lg font-semibold tracking-tight">AxisOneDesk</span>
+          <span className="text-lg font-semibold tracking-tight">{platformName}</span>
         </div>
 
         <div className="relative flex flex-col gap-8">
@@ -74,7 +86,7 @@ export function AuthLayout({
         </div>
 
         <p className="relative text-xs text-white/40">
-          &copy; {new Date().getFullYear()} AxisOneDesk. All rights reserved.
+          &copy; {new Date().getFullYear()} {platformName}. All rights reserved.
         </p>
       </div>
 
@@ -87,14 +99,18 @@ export function AuthLayout({
         >
           <div className="mb-8 flex items-center gap-2 lg:hidden">
             <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-lg">
-              <Sparkles className="size-4" />
+              {platformSettings?.logoUrl ? (
+                <img src={platformSettings.logoUrl} alt="" className="size-5 object-contain" />
+              ) : (
+                <Sparkles className="size-4" />
+              )}
             </div>
-            <span className="text-lg font-semibold tracking-tight">AxisOneDesk</span>
+            <span className="text-lg font-semibold tracking-tight">{platformName}</span>
           </div>
 
           <div className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-            <p className="text-muted-foreground mt-1.5 text-sm">{subtitle}</p>
+            <p className="text-muted-foreground mt-1.5 text-sm">{brandedSubtitle}</p>
           </div>
 
           {children}

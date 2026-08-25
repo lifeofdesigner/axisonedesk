@@ -37,6 +37,8 @@ export interface PlatformOrganization {
   deletedAt: string | null;
   planName: string | null;
   memberCount: number;
+  logoUrl?: string | null;
+  primaryColor?: string | null;
 }
 
 export interface PlatformOrganizationMember {
@@ -137,6 +139,7 @@ export async function getOrganizationDetail(orgId: string): Promise<PlatformOrga
     organization: {
       id: string; name: string; slug: string; business_type: string;
       status: OrganizationStatus; created_at: string; deleted_at: string | null;
+      logo_url: string | null; primary_color: string | null;
     };
     plan_name: string | null;
     subscription_status: string | null;
@@ -153,6 +156,8 @@ export async function getOrganizationDetail(orgId: string): Promise<PlatformOrga
       deletedAt: d.organization.deleted_at,
       planName: d.plan_name,
       memberCount: d.members.length,
+      logoUrl: d.organization.logo_url,
+      primaryColor: d.organization.primary_color,
     },
     planName: d.plan_name,
     subscriptionStatus: d.subscription_status,

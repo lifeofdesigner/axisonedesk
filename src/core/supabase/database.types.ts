@@ -1178,7 +1178,9 @@ export type Database = {
           currency: string
           deleted_at: string | null
           id: string
+          logo_url: string | null
           name: string
+          primary_color: string | null
           slug: string
           status: Database["public"]["Enums"]["organization_status"]
           stripe_customer_id: string | null
@@ -1191,7 +1193,9 @@ export type Database = {
           currency?: string
           deleted_at?: string | null
           id?: string
+          logo_url?: string | null
           name: string
+          primary_color?: string | null
           slug: string
           status?: Database["public"]["Enums"]["organization_status"]
           stripe_customer_id?: string | null
@@ -1204,7 +1208,9 @@ export type Database = {
           currency?: string
           deleted_at?: string | null
           id?: string
+          logo_url?: string | null
           name?: string
+          primary_color?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["organization_status"]
           stripe_customer_id?: string | null
@@ -1282,6 +1288,45 @@ export type Database = {
           granted_at?: string
           granted_by?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          accent_color: string
+          default_company_logo_url: string | null
+          favicon_url: string | null
+          id: boolean
+          logo_url: string | null
+          platform_name: string
+          primary_color: string
+          secondary_color: string
+          support_email: string | null
+          updated_at: string
+        }
+        Insert: {
+          accent_color?: string
+          default_company_logo_url?: string | null
+          favicon_url?: string | null
+          id?: boolean
+          logo_url?: string | null
+          platform_name?: string
+          primary_color?: string
+          secondary_color?: string
+          support_email?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string
+          default_company_logo_url?: string | null
+          favicon_url?: string | null
+          id?: boolean
+          logo_url?: string | null
+          platform_name?: string
+          primary_color?: string
+          secondary_color?: string
+          support_email?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2146,6 +2191,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      platform_update_org_branding: {
+        Args: { p_logo_url: string; p_org_id: string; p_primary_color: string }
+        Returns: undefined
+      }
       receive_purchase_order: {
         Args: { p_org_id: string; p_purchase_order_id: string }
         Returns: {
@@ -2194,6 +2243,27 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      update_platform_settings: {
+        Args: { p_updates: Json }
+        Returns: {
+          accent_color: string
+          default_company_logo_url: string | null
+          favicon_url: string | null
+          id: boolean
+          logo_url: string | null
+          platform_name: string
+          primary_color: string
+          secondary_color: string
+          support_email: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "platform_settings"
           isOneToOne: true
           isSetofReturn: false
         }

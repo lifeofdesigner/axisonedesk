@@ -26,6 +26,7 @@ import {
   TableRow,
 } from "@/shared/components/ui/table";
 import { useArchiveOrganization, usePlatformOrganization, useRestoreOrganization } from "@/core/platform-admin/hooks";
+import { TenantBrandingCard } from "@/modules/platform-admin/components/TenantBrandingCard";
 
 export function TenantDetailPage() {
   const { orgId } = useParams<{ orgId: string }>();
@@ -164,6 +165,13 @@ export function TenantDetailPage() {
           )}
         </CardContent>
       </Card>
+
+      <TenantBrandingCard
+        key={data.organization.id}
+        orgId={data.organization.id}
+        logoUrl={data.organization.logoUrl ?? null}
+        primaryColor={data.organization.primaryColor ?? null}
+      />
     </div>
   );
 }
