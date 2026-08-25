@@ -87,6 +87,10 @@ export const router = createBrowserRouter([
                 path: "/platform-admin/media",
                 lazy: () => import("@/pages/PlatformMediaLibraryPage"),
               },
+              {
+                path: "/platform-admin/notifications",
+                lazy: () => import("@/pages/PlatformNotificationsPage"),
+              },
             ],
           },
         ],

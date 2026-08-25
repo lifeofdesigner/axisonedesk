@@ -5,6 +5,7 @@ import { Bell, LogOut, Menu, Moon, Search, Settings, Sun, User as UserIcon } fro
 import { useAuth } from "@/core/auth/AuthProvider";
 import { supabase } from "@/core/supabase/client";
 import { useTheme } from "@/shared/hooks/use-theme";
+import { useMarkAllRead, useMyNotifications } from "@/core/notifications/hooks";
 import { OrgSwitcher } from "@/shared/components/layout/OrgSwitcher";
 import { SidebarNav } from "@/shared/components/layout/SidebarNav";
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
@@ -21,11 +22,15 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/shared/components/ui/sheet";
 
-const demoNotifications = [
-  { title: "Low stock alert", detail: "Espresso Beans 1kg — 4 units left", time: "12m ago" },
-  { title: "New order placed", detail: "Order #4821 from Maria Santos", time: "1h ago" },
-  { title: "Shift reminder", detail: "Evening shift starts in 30 minutes", time: "2h ago" },
-];
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
 
 function initialsFromEmail(email: string | undefined) {
   if (!email) return "U";
@@ -37,6 +42,15 @@ export function Topbar() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { data: notifications } = useMyNotifications();
+  const markAllRead = useMarkAllRead();
+  const unread = (notifications ?? []).filter((n) => !n.readAt);
+
+  function handleNotificationsOpen(open: boolean) {
+    if (open && unread.length > 0) {
+      markAllRead.mutate(unread.map((n) => n.id));
+    }
+  }
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -72,28 +86,36 @@ export function Topbar() {
           {theme === "dark" ? <Sun className="size-4.5" /> : <Moon className="size-4.5" />}
         </Button>
 
-        <DropdownMenu>
+        <DropdownMenu onOpenChange={handleNotificationsOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
               <Bell className="size-4.5" />
-              <span className="bg-destructive absolute top-1.5 right-1.5 size-2 rounded-full" />
+              {unread.length > 0 ? (
+                <span className="bg-destructive absolute top-1.5 right-1.5 size-2 rounded-full" />
+              ) : null}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80">
             <DropdownMenuLabel className="flex items-center justify-between">
               Notifications
-              <Badge variant="secondary" className="font-normal">
-                {demoNotifications.length} new
-              </Badge>
+              {unread.length > 0 ? (
+                <Badge variant="secondary" className="font-normal">
+                  {unread.length} new
+                </Badge>
+              ) : null}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {demoNotifications.map((n) => (
-              <DropdownMenuItem key={n.title} className="flex-col items-start gap-0.5 py-2.5">
-                <span className="text-sm font-medium">{n.title}</span>
-                <span className="text-muted-foreground text-xs">{n.detail}</span>
-                <span className="text-muted-foreground/70 text-[11px]">{n.time}</span>
-              </DropdownMenuItem>
-            ))}
+            {!notifications || notifications.length === 0 ? (
+              <div className="text-muted-foreground px-2 py-4 text-center text-xs">No notifications yet</div>
+            ) : (
+              notifications.slice(0, 8).map((n) => (
+                <DropdownMenuItem key={n.id} className="flex-col items-start gap-0.5 py-2.5">
+                  <span className="text-sm font-medium">{n.title}</span>
+                  {n.body ? <span className="text-muted-foreground text-xs">{n.body}</span> : null}
+                  <span className="text-muted-foreground/70 text-[11px]">{timeAgo(n.createdAt)}</span>
+                </DropdownMenuItem>
+              ))
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
 

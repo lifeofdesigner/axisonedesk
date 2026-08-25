@@ -39,6 +39,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          severity: string
+          starts_at: string
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          severity?: string
+          starts_at?: string
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          severity?: string
+          starts_at?: string
+          title?: string
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -985,6 +1021,71 @@ export type Database = {
           },
         ]
       }
+      notification_channels: {
+        Row: {
+          config: Json
+          is_connected: boolean
+          key: string
+          label: string
+        }
+        Insert: {
+          config?: Json
+          is_connected?: boolean
+          key: string
+          label: string
+        }
+        Update: {
+          config?: Json
+          is_connected?: boolean
+          key?: string
+          label?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          metadata: Json
+          org_id: string
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          org_id: string
+          read_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          org_id?: string
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_events: {
         Row: {
           actor_id: string | null
@@ -1437,6 +1538,8 @@ export type Database = {
           favicon_url: string | null
           id: boolean
           logo_url: string | null
+          maintenance_message: string | null
+          maintenance_mode: boolean
           platform_name: string
           primary_color: string
           secondary_color: string
@@ -1449,6 +1552,8 @@ export type Database = {
           favicon_url?: string | null
           id?: boolean
           logo_url?: string | null
+          maintenance_message?: string | null
+          maintenance_mode?: boolean
           platform_name?: string
           primary_color?: string
           secondary_color?: string
@@ -1461,6 +1566,8 @@ export type Database = {
           favicon_url?: string | null
           id?: boolean
           logo_url?: string | null
+          maintenance_message?: string | null
+          maintenance_mode?: boolean
           platform_name?: string
           primary_color?: string
           secondary_color?: string
@@ -2369,6 +2476,16 @@ export type Database = {
         }
         Returns: undefined
       }
+      notify_org_members: {
+        Args: {
+          p_body: string
+          p_exclude_user_id?: string
+          p_org_id: string
+          p_title: string
+          p_type: string
+        }
+        Returns: undefined
+      }
       platform_archive_organization: {
         Args: { p_org_id: string }
         Returns: undefined
@@ -2718,6 +2835,8 @@ export type Database = {
           favicon_url: string | null
           id: boolean
           logo_url: string | null
+          maintenance_message: string | null
+          maintenance_mode: boolean
           platform_name: string
           primary_color: string
           secondary_color: string
