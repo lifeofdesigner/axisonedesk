@@ -235,6 +235,42 @@ export type Database = {
           },
         ]
       }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          discount_type: string
+          discount_value: number
+          id: string
+          is_active: boolean
+          max_redemptions: number | null
+          times_redeemed: number
+          valid_until: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_type: string
+          discount_value: number
+          id?: string
+          is_active?: boolean
+          max_redemptions?: number | null
+          times_redeemed?: number
+          valid_until?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          is_active?: boolean
+          max_redemptions?: number | null
+          times_redeemed?: number
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       customer_notes: {
         Row: {
           author_id: string
@@ -842,6 +878,56 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount: number
+          created_at: string
+          due_date: string | null
+          id: string
+          invoice_number: string
+          notes: string | null
+          org_id: string
+          paid_at: string | null
+          status: string
+          stripe_invoice_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          invoice_number: string
+          notes?: string | null
+          org_id: string
+          paid_at?: string | null
+          status?: string
+          stripe_invoice_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          invoice_number?: string
+          notes?: string | null
+          org_id?: string
+          paid_at?: string | null
+          status?: string
+          stripe_invoice_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -2172,6 +2258,60 @@ export type Database = {
           org_name: string
         }[]
       }
+      platform_list_coupons: {
+        Args: never
+        Returns: {
+          code: string
+          created_at: string
+          discount_type: string
+          discount_value: number
+          id: string
+          is_active: boolean
+          max_redemptions: number | null
+          times_redeemed: number
+          valid_until: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "coupons"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      platform_list_invoices: {
+        Args: never
+        Returns: {
+          amount: number
+          created_at: string
+          due_date: string
+          id: string
+          invoice_number: string
+          notes: string
+          org_id: string
+          org_name: string
+          paid_at: string
+          status: string
+        }[]
+      }
+      platform_list_plans: {
+        Args: never
+        Returns: {
+          id: string
+          is_active: boolean
+          key: string
+          module_limits: Json
+          name: string
+          price_monthly: number
+          price_yearly: number
+          seat_limit: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "plans"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       platform_restore_organization: {
         Args: { p_org_id: string }
         Returns: undefined
@@ -2194,6 +2334,102 @@ export type Database = {
       platform_update_org_branding: {
         Args: { p_logo_url: string; p_org_id: string; p_primary_color: string }
         Returns: undefined
+      }
+      platform_update_subscription: {
+        Args: {
+          p_current_period_end: string
+          p_org_id: string
+          p_plan_id: string
+          p_seats: number
+          p_status: string
+        }
+        Returns: undefined
+      }
+      platform_upsert_coupon: {
+        Args: {
+          p_code: string
+          p_discount_type: string
+          p_discount_value: number
+          p_id: string
+          p_is_active: boolean
+          p_max_redemptions: number
+          p_valid_until: string
+        }
+        Returns: {
+          code: string
+          created_at: string
+          discount_type: string
+          discount_value: number
+          id: string
+          is_active: boolean
+          max_redemptions: number | null
+          times_redeemed: number
+          valid_until: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "coupons"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      platform_upsert_invoice: {
+        Args: {
+          p_amount: number
+          p_due_date: string
+          p_id: string
+          p_invoice_number: string
+          p_notes: string
+          p_org_id: string
+          p_status: string
+        }
+        Returns: {
+          amount: number
+          created_at: string
+          due_date: string | null
+          id: string
+          invoice_number: string
+          notes: string | null
+          org_id: string
+          paid_at: string | null
+          status: string
+          stripe_invoice_id: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "invoices"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      platform_upsert_plan: {
+        Args: {
+          p_id: string
+          p_is_active: boolean
+          p_key: string
+          p_module_limits: Json
+          p_name: string
+          p_price_monthly: number
+          p_price_yearly: number
+          p_seat_limit: number
+        }
+        Returns: {
+          id: string
+          is_active: boolean
+          key: string
+          module_limits: Json
+          name: string
+          price_monthly: number
+          price_yearly: number
+          seat_limit: number | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "plans"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       receive_purchase_order: {
         Args: { p_org_id: string; p_purchase_order_id: string }

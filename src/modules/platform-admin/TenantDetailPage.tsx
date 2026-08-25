@@ -27,6 +27,7 @@ import {
 } from "@/shared/components/ui/table";
 import { useArchiveOrganization, usePlatformOrganization, useRestoreOrganization } from "@/core/platform-admin/hooks";
 import { TenantBrandingCard } from "@/modules/platform-admin/components/TenantBrandingCard";
+import { TenantSubscriptionCard } from "@/modules/platform-admin/components/TenantSubscriptionCard";
 
 export function TenantDetailPage() {
   const { orgId } = useParams<{ orgId: string }>();
@@ -166,8 +167,15 @@ export function TenantDetailPage() {
         </CardContent>
       </Card>
 
+      <TenantSubscriptionCard
+        key={`sub-${data.organization.id}`}
+        orgId={data.organization.id}
+        currentPlanName={data.planName}
+        currentStatus={data.subscriptionStatus}
+      />
+
       <TenantBrandingCard
-        key={data.organization.id}
+        key={`brand-${data.organization.id}`}
         orgId={data.organization.id}
         logoUrl={data.organization.logoUrl ?? null}
         primaryColor={data.organization.primaryColor ?? null}

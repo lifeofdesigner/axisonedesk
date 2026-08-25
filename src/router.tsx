@@ -63,6 +63,10 @@ export const router = createBrowserRouter([
                 path: "/platform-admin/branding",
                 lazy: () => import("@/pages/PlatformBrandingPage"),
               },
+              {
+                path: "/platform-admin/subscriptions",
+                lazy: () => import("@/pages/PlatformSubscriptionsPage"),
+              },
             ],
           },
         ],
