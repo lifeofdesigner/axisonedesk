@@ -50,6 +50,21 @@ Explicitly **not started**. Full implementation plan lives in [.ai/02_INDUSTRY_E
 
 Not started. Full target architecture in [.ai/05_WORKSPACE_COLLABORATION.md](../../.ai/05_WORKSPACE_COLLABORATION.md). No channels/messaging/calls exist in the current schema or code.
 
+## Planned — Enterprise Marketing Website
+
+- **Status**: Planned.
+- **Priority**: High.
+- **Estimated phase**: After Industry Module Engine Foundation (Phase 1: Module Registry) — sequenced after, not before, per [docs/00_ADOS/AI_INSTRUCTIONS.md](AI_INSTRUCTIONS.md)'s Architectural Foundations Rule and Incremental Delivery Rule.
+- **Business value**: AxisOneDesk's public site is currently a bare CMS-page renderer (see [docs/09_MARKETING/INDEX.md](../09_MARKETING/INDEX.md)) with no dedicated marketing experience. This milestone treats the marketing site as a core product deliverable, not a throwaway landing page, reflecting the platform's quality for customers, investors, partners, and enterprise buyers.
+- **Objective**: a complete, CMS-driven, white-label-aware public website — Home, Features, Industries, Modules, Marketplace, Integrations, AI, Platform Owner, Workspace, White-label, Security, Pricing, Enterprise, Documentation, Blog, About, Careers, Contact.
+- **Design benchmark**: study span.framer.ai for visual hierarchy, spacing, motion, and premium presentation quality — original AxisOneDesk execution only, no copied branding/graphics/copy.
+- **Deliverables**: page set above; a reusable marketing component library (Hero, Navigation, Mega Menu, Dashboard Showcase, Industry Cards, Module Cards, Feature Sections, AI Showcase, Marketplace Showcase, Integrations Grid, Pricing, FAQ, Testimonials, CTA Sections, Footer) added to the shared design system; a reusable motion system (page transitions, staggered reveals, hover interactions, etc.).
+- **Dependencies**: Industries and Modules pages are only meaningfully accurate once the Industry Engine / Module Registry exist (see [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md)) — building them earlier risks marketing copy describing capabilities the product doesn't have yet, which [docs/00_ADOS/AI_INSTRUCTIONS.md](AI_INSTRUCTIONS.md)'s no-fabrication rule applies to just as much as engineering docs. Marketplace and Workspace pages are similarly downstream of their respective playbooks ([.ai/08_MARKETPLACE.md](../../.ai/08_MARKETPLACE.md), [.ai/05_WORKSPACE_COLLABORATION.md](../../.ai/05_WORKSPACE_COLLABORATION.md)) — those pages should describe what's real or clearly-roadmapped, not aspirational features presented as available today.
+- **Architecture**: extends the existing CMS (`cms_pages`) and public route segment (see [docs/02_ARCHITECTURE/INDEX.md](../02_ARCHITECTURE/INDEX.md)) rather than a parallel content system — see [.ai/03_PUBLIC_WEBSITE.md](../../.ai/03_PUBLIC_WEBSITE.md) for the implementation playbook this milestone should follow (SEO, analytics, lead capture, i18n, A/B testing all noted there as sequenced phases, not day-one requirements).
+- **Completion requirements**: `pnpm build` + `pnpm lint` clean, responsive layouts verified, accessibility verified (see [24_CHECKLISTS/ACCESSIBILITY_CHECKLIST.md](../24_CHECKLISTS/ACCESSIBILITY_CHECKLIST.md)), SEO verified, Lighthouse performance verified — then update `PROJECT_STATE.md`, `PROJECT_HEALTH.md`, `ROADMAP.md`, `PROGRESS.md`, `CHANGELOG.md`, commit, push.
+- **Related modules/tables**: `cms_pages` (existing); no new modules — this is presentation-layer work.
+- **Testing status**: N/A — not started.
+
 ## Planned — other tracked initiatives
 
 | Initiative | Status | Reference |

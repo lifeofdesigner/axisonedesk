@@ -6,6 +6,10 @@ title: Changelog
 
 Human-readable summary, newest first. Machine-verifiable detail is in `git log`; this file explains *why*, not just *what*.
 
+## 2026-08-25 — Enterprise Engineering Knowledge Platform (EEKP) established
+
+Extended ADOS into a full recurring-task knowledge platform: `docs/16_PLAYBOOKS/` (63 playbooks — a generic CREATE workflow plus 53 artifact-specific playbooks and 9 process playbooks for bug fixes, releases, rollbacks, etc.), `docs/17_TEMPLATES/` (24 copy-paste skeletons), `docs/18_REFERENCE/` (23 registries — Permissions Matrix, Roles Matrix, Route Registry, RPC Registry, RLS Policy Registry, and others derived from a fresh live-code audit; Module/Industry/Organization Type/Provider registries marked Planned since those systems don't exist yet), `docs/19_RUNBOOKS/` (15 operational runbooks for deployment, incidents, recovery, and rotation), `docs/20_OPERATIONS/`, `docs/21_GOVERNANCE/` (16 standards documents), `docs/22_PATTERNS/ARCHITECTURAL_PRINCIPLES.md` (16 governing principles), `docs/23_EXAMPLES/`, `docs/24_CHECKLISTS/` (12 actionable checklists), `docs/25_DIAGRAMS/` (2 Mermaid diagrams of the real route tree and RLS data flow). Added three permanent rules to `AI_INSTRUCTIONS.md`: Autonomous Development Rule (what "Continue" means), Incremental Delivery Rule (one milestone per session), Architectural Foundations Rule (never skip a required registry/config layer to build atop its absence). Added the Enterprise Marketing Website milestone to `ROADMAP.md`. No application code changed; build and lint verified passing.
+
 ## 2026-08-25 — ADOS established
 
 Built the full Engineering Operating System: `docs/00_ADOS/` (state/process files), `docs/01_PRODUCT/` through `docs/15_DEVELOPER/` (subject-area reference, audited against actual code/migrations, no fabricated content), `docs/14_INTEGRATIONS/PROVIDER_MANAGEMENT.md`, and `.ai/` (13 implementation playbooks for not-yet-built systems). No application code changed. Goal: future sessions can resume with "Continue" instead of re-deriving context from conversation history.

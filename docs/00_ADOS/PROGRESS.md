@@ -26,7 +26,8 @@ Chronological build order, from `git log --oneline` (oldest → newest). This is
 17. `ba980af` Developer Tools (API keys / webhooks / edge functions registry).
 18. `dbb4b67` CMS (public pages).
 19. `cfb9f33` Vercel deep-link routing fix.
-20. `[this session]` ADOS documentation system established (docs/, .ai/).
+20. ADOS documentation system established (`docs/00_ADOS/` through `docs/15_DEVELOPER/`, `.ai/`).
+21. `[this session]` Enterprise Engineering Knowledge Platform (EEKP) established: `docs/16_PLAYBOOKS/` (63 playbooks), `docs/17_TEMPLATES/` (24 templates), `docs/18_REFERENCE/` (23 registries, several derived from live-code audit of permissions/roles/routes/RPCs/RLS policies), `docs/19_RUNBOOKS/` (15 operational runbooks), `docs/20_OPERATIONS/`, `docs/21_GOVERNANCE/` (16 standards docs), `docs/22_PATTERNS/` (16 architectural principles), `docs/23_EXAMPLES/`, `docs/24_CHECKLISTS/` (12 checklists), `docs/25_DIAGRAMS/` (2 Mermaid diagrams). Added Autonomous Development Rule, Incremental Delivery Rule, and Architectural Foundations Rule to `AI_INSTRUCTIONS.md`. Added Enterprise Marketing Website milestone to `ROADMAP.md`. No application code changed.
 
 ## What's NOT yet started
 

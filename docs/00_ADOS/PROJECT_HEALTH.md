@@ -32,9 +32,9 @@ Core multi-tenant ERP CRUD + Platform Owner Portal is solid and broad (20 module
 | Industry Module Engine | 0% | Not started — planned |
 | Workspace & Collaboration | 0% | Not started — planned |
 
-## Documentation coverage: ~95% (of what exists)
+## Documentation coverage: ~98% (of what exists)
 
-Every shipped module, the full DB schema, and platform architecture are now documented in ADOS as of this session. Coverage is of *actual implementation* — planned-but-unbuilt systems are documented as playbooks (`.ai/`), not claimed as built.
+Every shipped module, the full DB schema, and platform architecture are documented in ADOS. As of this session, the documentation system was extended into a full Enterprise Engineering Knowledge Platform (EEKP): 63 recurring-task playbooks (`docs/16_PLAYBOOKS/`), 24 copy-paste templates (`docs/17_TEMPLATES/`), 23 reference registries (`docs/18_REFERENCE/` — several, like the Permissions/Roles/Route/RPC/RLS registries, derived from a live-code audit rather than restated from memory), 15 operational runbooks (`docs/19_RUNBOOKS/`), 16 governance standards (`docs/21_GOVERNANCE/`), 16 architectural principles (`docs/22_PATTERNS/`), 12 checklists (`docs/24_CHECKLISTS/`), and 2 Mermaid architecture diagrams (`docs/25_DIAGRAMS/`). Coverage is of *actual implementation* — planned-but-unbuilt systems are documented as playbooks/specs and explicitly marked Planned, never claimed as built.
 
 ## Test coverage: 0%
 
@@ -69,3 +69,8 @@ Beyond production readiness gaps: no Industry Engine (every customer gets the sa
 1. Testing + CI (de-risks everything after it).
 2. Provider Management + one real payment provider (unblocks revenue).
 3. Industry Module Engine Phase 1 (Module Registry) — see [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md).
+4. Enterprise Marketing Website — after Industry Module Engine Foundation, per [ROADMAP.md](ROADMAP.md).
+
+## Engineering process maturity (new dimension, tracked from this session)
+
+With EEKP in place, any recurring engineering task (new module, table, RLS policy, provider, permission, etc.) now has a matching playbook + template pair, and every artifact type resolves to exactly one Source of Truth. This doesn't change *what's built*, but it reduces the risk of future work re-deriving conventions inconsistently or duplicating existing systems — track this qualitatively rather than as a numeric score, since "process maturity" isn't independently verifiable the way test coverage or build status is.
