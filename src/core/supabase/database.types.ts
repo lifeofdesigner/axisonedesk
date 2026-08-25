@@ -388,6 +388,48 @@ export type Database = {
           },
         ]
       }
+      cms_pages: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          id: string
+          meta_description: string | null
+          page_type: string
+          published_at: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          meta_description?: string | null
+          page_type?: string
+          published_at?: string | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          meta_description?: string | null
+          page_type?: string
+          published_at?: string | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           code: string
@@ -2859,6 +2901,7 @@ export type Database = {
         }
       }
       platform_dashboard_stats: { Args: never; Returns: Json }
+      platform_delete_cms_page: { Args: { p_id: string }; Returns: undefined }
       platform_grant_admin: { Args: { p_user_id: string }; Returns: undefined }
       platform_list_ai_providers: {
         Args: never
@@ -2892,6 +2935,28 @@ export type Database = {
           org_id: string
           org_name: string
         }[]
+      }
+      platform_list_cms_pages: {
+        Args: never
+        Returns: {
+          body: string
+          created_at: string
+          created_by: string | null
+          id: string
+          meta_description: string | null
+          page_type: string
+          published_at: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "cms_pages"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       platform_list_coupons: {
         Args: never
@@ -3133,6 +3198,36 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "ai_prompt_templates"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      platform_upsert_cms_page: {
+        Args: {
+          p_body: string
+          p_id: string
+          p_meta_description: string
+          p_page_type: string
+          p_slug: string
+          p_status: string
+          p_title: string
+        }
+        Returns: {
+          body: string
+          created_at: string
+          created_by: string | null
+          id: string
+          meta_description: string | null
+          page_type: string
+          published_at: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "cms_pages"
           isOneToOne: true
           isSetofReturn: false
         }

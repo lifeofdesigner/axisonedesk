@@ -10,6 +10,10 @@ import { SettingsLayout } from "@/modules/settings/SettingsLayout";
 
 export const router = createBrowserRouter([
   {
+    path: "/pages/:slug",
+    lazy: () => import("@/pages/PublicPageViewPage"),
+  },
+  {
     element: <RedirectIfAuthed />,
     children: [
       {
@@ -106,6 +110,10 @@ export const router = createBrowserRouter([
               {
                 path: "/platform-admin/developer-tools",
                 lazy: () => import("@/pages/PlatformDeveloperToolsPage"),
+              },
+              {
+                path: "/platform-admin/cms",
+                lazy: () => import("@/pages/PlatformCmsPage"),
               },
             ],
           },
