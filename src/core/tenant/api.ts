@@ -10,6 +10,19 @@ export interface CreateOrganizationInput {
    * behavior exactly. See docs/00_ADOS/DECISIONS.md ADR-009.
    */
   organizationTypeKey?: string;
+  /**
+   * Full-profile fields from 0032_onboarding_full_profile.sql — only
+   * collected/sent when the registry picker flag is on (see OnboardingForm).
+   * All optional; the RPC persists whatever is provided.
+   */
+  companySize?: string;
+  employeeCount?: number;
+  branchCount?: number;
+  warehouseCount?: number;
+  country?: string;
+  timezone?: string;
+  currency?: string;
+  preferredLanguage?: string;
 }
 
 export async function createOrganization(input: CreateOrganizationInput) {
@@ -20,6 +33,14 @@ export async function createOrganization(input: CreateOrganizationInput) {
     org_slug: slug,
     org_business_type: input.businessType,
     p_organization_type_key: input.organizationTypeKey,
+    p_company_size: input.companySize,
+    p_employee_count: input.employeeCount,
+    p_branch_count: input.branchCount,
+    p_warehouse_count: input.warehouseCount,
+    p_country: input.country,
+    p_timezone: input.timezone,
+    p_currency: input.currency,
+    p_preferred_language: input.preferredLanguage,
   });
 
   if (error) throw toAppError(error);

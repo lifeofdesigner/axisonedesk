@@ -6,6 +6,16 @@ title: Changelog
 
 Human-readable summary, newest first. Machine-verifiable detail is in `git log`; this file explains *why*, not just *what*.
 
+## 2026-08-25 — Complete onboarding full-profile collection (Industry Engine Phase 3b slice 2)
+
+`create_organization_with_owner()` now persists all 8 remaining onboarding fields requested (company size, employee count, branch count, warehouse count, country, timezone, currency, preferred language), automatically applies the selected organization type's default module configuration from the Phase 2 registry as `org_feature_flags` rows, and logs an `organization.created` audit event (`0032_onboarding_full_profile.sql`). `OnboardingForm.tsx` collects all of it, gated behind the same `onboarding.industry_registry_picker` flag as slice 1 — legacy flow (flag off, the default) is unaffected.
+
+The exact same bug as the prior migration recurred: adding parameters via `create or replace function` created a duplicate Postgres overload instead of replacing the function, caught live and fixed in `0033_fix_create_organization_overload_2.sql`.
+
+Explicitly NOT built, and documented in full in ADR-010 (`DECISIONS.md`) rather than silently skipped: "Workspace" as a distinct entity (organizations already is that), "Default Departments" (no such concept exists in the schema), "Dashboard Configuration" (never built, only ever proposed), "AI Configuration" (no live AI system exists to configure). Navigation generation was left untouched per explicit instruction.
+
+**The feature flag stays OFF.** A full live end-to-end verification requires clicking through real Supabase Auth signup in a browser — not something this environment can safely do (no way to complete email confirmation, and the live database's production status is unknown). Per the user's own stated rule ("if verification fails, leave the flag OFF, document why"), that gap is treated as a failed verification, not worked around. Everything that could be verified without live signup was: the migrations apply cleanly, the module-defaults join produces exactly the expected rows for a real registry key, and the full app compiles/typechecks against the live schema. Build and lint verified passing.
+
 ## 2026-08-25 — Establish `organization_type_key` as canonical Source of Truth (Industry Engine Phase 3b slice 1)
 
 Per an explicit architecture directive: `organization_type_key` is now the permanent, canonical identifier for organization classification across AxisOneDesk; `business_type` (existing since `0001_init.sql`) becomes legacy-compatibility only — kept working for every existing consumer, never referenced by new code, not removed (removal is a future major-version item, only after an audit proves zero usage).

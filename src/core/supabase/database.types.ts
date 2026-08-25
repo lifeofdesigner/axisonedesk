@@ -2971,7 +2971,15 @@ export type Database = {
           org_business_type: string
           org_name: string
           org_slug: string
+          p_branch_count?: number
+          p_company_size?: string
+          p_country?: string
+          p_currency?: string
+          p_employee_count?: number
           p_organization_type_key?: string
+          p_preferred_language?: string
+          p_timezone?: string
+          p_warehouse_count?: number
         }
         Returns: string
       }

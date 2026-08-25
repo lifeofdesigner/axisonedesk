@@ -59,9 +59,26 @@ const businessTypes = [
 const onboardingSchema = z.object({
   organizationName: z.string().min(2, "Enter your organization's name"),
   businessType: z.string().min(1, "Choose the option closest to your business"),
+  // Full-profile fields — only rendered/required when the registry picker
+  // flag is on (see 0032_onboarding_full_profile.sql). Kept optional in the
+  // schema itself since the legacy (flag-off) form never renders them.
+  companySize: z.string().optional(),
+  employeeCount: z.string().optional(),
+  branchCount: z.string().optional(),
+  warehouseCount: z.string().optional(),
+  country: z.string().optional(),
+  timezone: z.string().optional(),
+  currency: z.string().optional(),
+  preferredLanguage: z.string().optional(),
 });
 
 type OnboardingValues = z.infer<typeof onboardingSchema>;
+
+function toOptionalInt(value: string | undefined): number | undefined {
+  if (!value) return undefined;
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
 
 export function OnboardingForm() {
   const navigate = useNavigate();
@@ -74,7 +91,18 @@ export function OnboardingForm() {
 
   const form = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema),
-    defaultValues: { organizationName: "", businessType: "" },
+    defaultValues: {
+      organizationName: "",
+      businessType: "",
+      companySize: "",
+      employeeCount: "",
+      branchCount: "",
+      warehouseCount: "",
+      country: "",
+      timezone: "",
+      currency: "",
+      preferredLanguage: "",
+    },
   });
 
   async function onSubmit(values: OnboardingValues) {
@@ -87,6 +115,16 @@ export function OnboardingForm() {
         // value is one of organization_types.key in that case, matching
         // business_type 1:1 by construction. See ADR-009.
         organizationTypeKey: useRegistryPicker ? values.businessType : undefined,
+        // Full-profile fields likewise only sent under the new flagged
+        // experience — omitted (left null) for the legacy flow.
+        companySize: useRegistryPicker ? values.companySize || undefined : undefined,
+        employeeCount: useRegistryPicker ? toOptionalInt(values.employeeCount) : undefined,
+        branchCount: useRegistryPicker ? toOptionalInt(values.branchCount) : undefined,
+        warehouseCount: useRegistryPicker ? toOptionalInt(values.warehouseCount) : undefined,
+        country: useRegistryPicker ? values.country || undefined : undefined,
+        timezone: useRegistryPicker ? values.timezone || undefined : undefined,
+        currency: useRegistryPicker ? values.currency || undefined : undefined,
+        preferredLanguage: useRegistryPicker ? values.preferredLanguage || undefined : undefined,
       });
       toast.success("Organization created", {
         description: `${values.organizationName} is ready to go.`,
@@ -186,6 +224,115 @@ export function OnboardingForm() {
             </FormItem>
           )}
         />
+
+        {useRegistryPicker ? (
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="companySize"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Company size</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. 1-10" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="employeeCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Employees</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="0" placeholder="e.g. 12" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="branchCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Branches</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="0" placeholder="e.g. 1" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="warehouseCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Warehouses</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="0" placeholder="e.g. 0" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Country</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Nigeria" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="timezone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Timezone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Africa/Lagos" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. USD" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="preferredLanguage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Preferred language</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. English" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        ) : null}
 
         <Button type="submit" className="mt-1 w-full" disabled={submitting}>
           {submitting ? <Loader2 className="size-4 animate-spin" /> : null}
