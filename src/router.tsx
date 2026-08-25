@@ -99,6 +99,10 @@ export const router = createBrowserRouter([
                 path: "/platform-admin/system-health",
                 lazy: () => import("@/pages/PlatformSystemHealthPage"),
               },
+              {
+                path: "/platform-admin/security",
+                lazy: () => import("@/pages/PlatformSecurityCenterPage"),
+              },
             ],
           },
         ],

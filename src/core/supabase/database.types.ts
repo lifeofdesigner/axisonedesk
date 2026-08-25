@@ -2876,6 +2876,27 @@ export type Database = {
         Returns: undefined
       }
       platform_revoke_admin: { Args: { p_user_id: string }; Returns: undefined }
+      platform_rls_coverage: {
+        Args: never
+        Returns: {
+          policy_count: number
+          rls_enabled: boolean
+          table_name: string
+        }[]
+      }
+      platform_security_events: {
+        Args: { p_limit?: number }
+        Returns: {
+          action: string
+          actor_email: string
+          actor_id: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          metadata: Json
+        }[]
+      }
       platform_set_ai_provider_connected: {
         Args: { p_is_connected: boolean; p_key: string; p_notes?: string }
         Returns: undefined
