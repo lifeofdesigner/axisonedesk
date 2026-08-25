@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Button } from "@/shared/components/ui/button";
+import { reportClientError } from "@/core/error/report-client-error";
 
 interface Props {
   children: ReactNode;
@@ -18,6 +19,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   override componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("[ErrorBoundary]", error, info.componentStack);
+    reportClientError(error.message, error.stack, { componentStack: info.componentStack ?? undefined });
   }
 
   override render() {

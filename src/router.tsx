@@ -95,6 +95,10 @@ export const router = createBrowserRouter([
                 path: "/platform-admin/ai-providers",
                 lazy: () => import("@/pages/PlatformAiProviderPage"),
               },
+              {
+                path: "/platform-admin/system-health",
+                lazy: () => import("@/pages/PlatformSystemHealthPage"),
+              },
             ],
           },
         ],

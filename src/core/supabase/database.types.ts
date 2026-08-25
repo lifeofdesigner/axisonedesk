@@ -578,6 +578,50 @@ export type Database = {
           },
         ]
       }
+      error_logs: {
+        Row: {
+          context: Json
+          created_at: string
+          id: string
+          message: string
+          org_id: string | null
+          resolved: boolean
+          stack: string | null
+          url: string | null
+          user_id: string | null
+        }
+        Insert: {
+          context?: Json
+          created_at?: string
+          id?: string
+          message: string
+          org_id?: string | null
+          resolved?: boolean
+          stack?: string | null
+          url?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          context?: Json
+          created_at?: string
+          id?: string
+          message?: string
+          org_id?: string | null
+          resolved?: boolean
+          stack?: string | null
+          url?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "error_logs_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       factorymvp_activity_log: {
         Row: {
           action: string
@@ -1645,6 +1689,33 @@ export type Database = {
           granted_at?: string
           granted_by?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      platform_integrations: {
+        Row: {
+          category: string
+          connected_at: string | null
+          docs_url: string | null
+          is_connected: boolean
+          key: string
+          label: string
+        }
+        Insert: {
+          category: string
+          connected_at?: string | null
+          docs_url?: string | null
+          is_connected?: boolean
+          key: string
+          label: string
+        }
+        Update: {
+          category?: string
+          connected_at?: string | null
+          docs_url?: string | null
+          is_connected?: boolean
+          key?: string
+          label?: string
         }
         Relationships: []
       }
@@ -2796,6 +2867,10 @@ export type Database = {
           memberships: Json
         }[]
       }
+      platform_resolve_error_log: {
+        Args: { p_id: string; p_resolved: boolean }
+        Returns: undefined
+      }
       platform_restore_organization: {
         Args: { p_org_id: string }
         Returns: undefined
@@ -2807,6 +2882,10 @@ export type Database = {
       }
       platform_set_flag_default: {
         Args: { p_enabled: boolean; p_flag_id: string }
+        Returns: undefined
+      }
+      platform_set_integration_connected: {
+        Args: { p_is_connected: boolean; p_key: string }
         Returns: undefined
       }
       platform_set_member_status: {
@@ -2827,6 +2906,19 @@ export type Database = {
           p_status: Database["public"]["Enums"]["organization_status"]
         }
         Returns: undefined
+      }
+      platform_system_health: {
+        Args: never
+        Returns: {
+          active_subscriptions_count: number
+          checked_at: string
+          open_tickets_count: number
+          orders_count: number
+          organizations_count: number
+          products_count: number
+          unresolved_error_count: number
+          users_count: number
+        }[]
       }
       platform_update_ai_settings: {
         Args: {

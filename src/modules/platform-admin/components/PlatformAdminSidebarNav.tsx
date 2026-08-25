@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Building2, ScrollText, ArrowLeftRight, ShieldCheck, Flag, Palette, CreditCard, Users, KeyRound, LifeBuoy, ImageIcon, Bell, Sparkles } from "lucide-react";
+import { LayoutDashboard, Building2, ScrollText, ArrowLeftRight, ShieldCheck, Flag, Palette, CreditCard, Users, KeyRound, LifeBuoy, ImageIcon, Bell, Sparkles, Activity } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 const navItems = [
@@ -12,6 +12,7 @@ const navItems = [
   { label: "Media library", href: "/platform-admin/media", icon: ImageIcon },
   { label: "Notifications", href: "/platform-admin/notifications", icon: Bell },
   { label: "AI providers", href: "/platform-admin/ai-providers", icon: Sparkles },
+  { label: "System health", href: "/platform-admin/system-health", icon: Activity },
   { label: "Feature flags", href: "/platform-admin/feature-flags", icon: Flag },
   { label: "Branding", href: "/platform-admin/branding", icon: Palette },
   { label: "Audit log", href: "/platform-admin/audit-log", icon: ScrollText },
