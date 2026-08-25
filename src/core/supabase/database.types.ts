@@ -2074,6 +2074,88 @@ export type Database = {
           },
         ]
       }
+      support_ticket_messages: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          is_internal: boolean
+          ticket_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          ticket_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          category: string
+          created_at: string
+          created_by: string
+          id: string
+          org_id: string
+          priority: string
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          category?: string
+          created_at?: string
+          created_by: string
+          id?: string
+          org_id: string
+          priority?: string
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          org_id?: string
+          priority?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       timesheets: {
         Row: {
           created_at: string
@@ -2354,6 +2436,23 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      platform_list_tickets: {
+        Args: never
+        Returns: {
+          assigned_to_name: string
+          category: string
+          created_at: string
+          created_by_name: string
+          id: string
+          message_count: number
+          org_id: string
+          org_name: string
+          priority: string
+          status: string
+          subject: string
+          updated_at: string
+        }[]
+      }
       platform_list_users: {
         Args: never
         Returns: {
@@ -2408,6 +2507,15 @@ export type Database = {
           p_plan_id: string
           p_seats: number
           p_status: string
+        }
+        Returns: undefined
+      }
+      platform_update_ticket: {
+        Args: {
+          p_assigned_to: string
+          p_priority: string
+          p_status: string
+          p_ticket_id: string
         }
         Returns: undefined
       }

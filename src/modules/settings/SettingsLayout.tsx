@@ -4,6 +4,7 @@ import { cn } from "@/shared/lib/utils";
 const tabs = [
   { label: "Organization", href: "/settings", end: true },
   { label: "Members & roles", href: "/settings/members" },
+  { label: "Support", href: "/settings/support" },
 ];
 
 export function SettingsLayout() {

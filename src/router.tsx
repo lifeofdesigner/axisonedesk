@@ -75,6 +75,14 @@ export const router = createBrowserRouter([
                 path: "/platform-admin/roles",
                 lazy: () => import("@/pages/PlatformRolesPage"),
               },
+              {
+                path: "/platform-admin/tickets",
+                lazy: () => import("@/pages/PlatformTicketsPage"),
+              },
+              {
+                path: "/platform-admin/tickets/:ticketId",
+                lazy: () => import("@/pages/PlatformTicketDetailPage"),
+              },
             ],
           },
         ],
@@ -242,6 +250,10 @@ export const router = createBrowserRouter([
                   {
                     path: "/settings/members",
                     lazy: () => import("@/pages/SettingsMembersPage"),
+                  },
+                  {
+                    path: "/settings/support",
+                    lazy: () => import("@/pages/SettingsSupportPage"),
                   },
                 ],
               },

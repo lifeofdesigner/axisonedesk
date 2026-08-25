@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Building2, ScrollText, ArrowLeftRight, ShieldCheck, Flag, Palette, CreditCard, Users, KeyRound } from "lucide-react";
+import { LayoutDashboard, Building2, ScrollText, ArrowLeftRight, ShieldCheck, Flag, Palette, CreditCard, Users, KeyRound, LifeBuoy } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 const navItems = [
@@ -8,6 +8,7 @@ const navItems = [
   { label: "Users", href: "/platform-admin/users", icon: Users },
   { label: "Roles & permissions", href: "/platform-admin/roles", icon: KeyRound },
   { label: "Subscriptions", href: "/platform-admin/subscriptions", icon: CreditCard },
+  { label: "Support tickets", href: "/platform-admin/tickets", icon: LifeBuoy },
   { label: "Feature flags", href: "/platform-admin/feature-flags", icon: Flag },
   { label: "Branding", href: "/platform-admin/branding", icon: Palette },
   { label: "Audit log", href: "/platform-admin/audit-log", icon: ScrollText },
