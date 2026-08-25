@@ -1692,6 +1692,63 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_api_keys: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          key_hash: string
+          key_prefix: string
+          label: string
+          last_used_at: string | null
+          revoked_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          key_hash: string
+          key_prefix: string
+          label: string
+          last_used_at?: string | null
+          revoked_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          label?: string
+          last_used_at?: string | null
+          revoked_at?: string | null
+        }
+        Relationships: []
+      }
+      platform_edge_functions: {
+        Row: {
+          description: string
+          docs_url: string | null
+          is_deployed: boolean
+          key: string
+          label: string
+        }
+        Insert: {
+          description: string
+          docs_url?: string | null
+          is_deployed?: boolean
+          key: string
+          label: string
+        }
+        Update: {
+          description?: string
+          docs_url?: string | null
+          is_deployed?: boolean
+          key?: string
+          label?: string
+        }
+        Relationships: []
+      }
       platform_integrations: {
         Row: {
           category: string
@@ -1780,6 +1837,36 @@ export type Database = {
             referencedColumns: ["key"]
           },
         ]
+      }
+      platform_webhooks: {
+        Row: {
+          created_at: string
+          event_types: string[]
+          id: string
+          is_active: boolean
+          label: string
+          secret: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          event_types?: string[]
+          id?: string
+          is_active?: boolean
+          label: string
+          secret?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          event_types?: string[]
+          id?: string
+          is_active?: boolean
+          label?: string
+          secret?: string
+          url?: string
+        }
+        Relationships: []
       }
       product_images: {
         Row: {
@@ -2566,6 +2653,44 @@ export type Database = {
           },
         ]
       }
+      webhook_deliveries: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          payload: Json
+          response_code: number | null
+          status: string
+          webhook_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          payload?: Json
+          response_code?: number | null
+          status?: string
+          webhook_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+          response_code?: number | null
+          status?: string
+          webhook_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_deliveries_webhook_id_fkey"
+            columns: ["webhook_id"]
+            isOneToOne: false
+            referencedRelation: "platform_webhooks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -2708,6 +2833,13 @@ export type Database = {
       platform_clear_org_flag_override: {
         Args: { p_flag_id: string; p_org_id: string }
         Returns: undefined
+      }
+      platform_create_api_key: {
+        Args: { p_label: string }
+        Returns: {
+          id: string
+          raw_key: string
+        }[]
       }
       platform_create_role: {
         Args: { p_name: string; p_org_id: string; p_permission_ids: string[] }
@@ -2876,6 +3008,7 @@ export type Database = {
         Returns: undefined
       }
       platform_revoke_admin: { Args: { p_user_id: string }; Returns: undefined }
+      platform_revoke_api_key: { Args: { p_id: string }; Returns: undefined }
       platform_rls_coverage: {
         Args: never
         Returns: {
@@ -2899,6 +3032,10 @@ export type Database = {
       }
       platform_set_ai_provider_connected: {
         Args: { p_is_connected: boolean; p_key: string; p_notes?: string }
+        Returns: undefined
+      }
+      platform_set_edge_function_deployed: {
+        Args: { p_is_deployed: boolean; p_key: string }
         Returns: undefined
       }
       platform_set_flag_default: {
