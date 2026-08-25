@@ -5,6 +5,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { cn } from "@/shared/lib/utils";
 import { useCurrentOrganization } from "@/core/tenant/OrganizationProvider";
+import { useEnabledModules } from "@/core/feature-flags/hooks";
 
 function NavRow({ item }: { item: NavItem }) {
   const Icon = item.icon;
@@ -50,6 +51,16 @@ function NavRow({ item }: { item: NavItem }) {
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { activeOrg, isLoading } = useCurrentOrganization();
+  const { data: enabledModules } = useEnabledModules();
+
+  // Flag-gated items (moduleKey set) are hidden entirely once flags have
+  // loaded and the module isn't enabled for this org — real gating, not a
+  // visual-only toggle. Items without a moduleKey (Dashboard, etc.) always
+  // show. While flags are still loading, show everything to avoid a flash
+  // of missing nav items on every page load.
+  const visibleItems = navItems.filter(
+    (item) => !item.moduleKey || !enabledModules || enabledModules.has(item.moduleKey),
+  );
 
   return (
     <div className="flex h-full flex-col" onClick={onNavigate}>
@@ -63,7 +74,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3">
-        {navItems.map((item) => (
+        {visibleItems.map((item) => (
           <NavRow key={item.href} item={item} />
         ))}
       </nav>

@@ -765,6 +765,36 @@ export type Database = {
           },
         ]
       }
+      feature_flags: {
+        Row: {
+          created_at: string
+          default_enabled: boolean
+          description: string
+          id: string
+          key: string
+          module_key: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_enabled?: boolean
+          description: string
+          id?: string
+          key: string
+          module_key?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_enabled?: boolean
+          description?: string
+          id?: string
+          key?: string
+          module_key?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inventory_transactions: {
         Row: {
           created_at: string
@@ -1047,6 +1077,42 @@ export type Database = {
           },
           {
             foreignKeyName: "orders_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_feature_flags: {
+        Row: {
+          enabled: boolean
+          flag_id: string
+          org_id: string
+          updated_at: string
+        }
+        Insert: {
+          enabled: boolean
+          flag_id: string
+          org_id: string
+          updated_at?: string
+        }
+        Update: {
+          enabled?: boolean
+          flag_id?: string
+          org_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_feature_flags_flag_id_fkey"
+            columns: ["flag_id"]
+            isOneToOne: false
+            referencedRelation: "feature_flags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "org_feature_flags_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -2041,6 +2107,10 @@ export type Database = {
         Args: { p_org_id: string }
         Returns: undefined
       }
+      platform_clear_org_flag_override: {
+        Args: { p_flag_id: string; p_org_id: string }
+        Returns: undefined
+      }
       platform_dashboard_stats: { Args: never; Returns: Json }
       platform_list_audit_logs: {
         Args: { p_limit?: number }
@@ -2059,6 +2129,14 @@ export type Database = {
       }
       platform_restore_organization: {
         Args: { p_org_id: string }
+        Returns: undefined
+      }
+      platform_set_flag_default: {
+        Args: { p_enabled: boolean; p_flag_id: string }
+        Returns: undefined
+      }
+      platform_set_org_flag_override: {
+        Args: { p_enabled: boolean; p_flag_id: string; p_org_id: string }
         Returns: undefined
       }
       platform_set_organization_status: {

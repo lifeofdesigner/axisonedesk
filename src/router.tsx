@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { RequireAuth, RequireOrg, RequirePlatformAdmin, RedirectIfAuthed } from "@/core/auth/RequireAuth";
+import { RequireModuleEnabled } from "@/core/feature-flags/RequireModuleEnabled";
 import { PlatformAdminShell } from "@/modules/platform-admin/PlatformAdminShell";
 import { AppShell } from "@/shared/components/layout/AppShell";
 import { InventoryLayout } from "@/modules/inventory/InventoryLayout";
@@ -54,6 +55,10 @@ export const router = createBrowserRouter([
                 path: "/platform-admin/audit-log",
                 lazy: () => import("@/pages/PlatformAuditLogPage"),
               },
+              {
+                path: "/platform-admin/feature-flags",
+                lazy: () => import("@/pages/PlatformFeatureFlagsPage"),
+              },
             ],
           },
         ],
@@ -69,107 +74,147 @@ export const router = createBrowserRouter([
                 lazy: () => import("@/pages/DashboardPage"),
               },
               {
-                element: <InventoryLayout />,
+                element: <RequireModuleEnabled moduleKey="inventory" />,
                 children: [
                   {
-                    path: "/inventory",
-                    lazy: () => import("@/pages/InventoryOverviewPage"),
+                    element: <InventoryLayout />,
+                    children: [
+                      {
+                        path: "/inventory",
+                        lazy: () => import("@/pages/InventoryOverviewPage"),
+                      },
+                      {
+                        path: "/inventory/products",
+                        lazy: () => import("@/pages/InventoryProductsPage"),
+                      },
+                      {
+                        path: "/inventory/categories",
+                        lazy: () => import("@/pages/InventoryCategoriesPage"),
+                      },
+                      {
+                        path: "/inventory/adjustments",
+                        lazy: () => import("@/pages/InventoryAdjustmentsPage"),
+                      },
+                    ],
                   },
                   {
-                    path: "/inventory/products",
-                    lazy: () => import("@/pages/InventoryProductsPage"),
+                    path: "/inventory/products/new",
+                    lazy: () => import("@/pages/InventoryAddProductPage"),
                   },
                   {
-                    path: "/inventory/categories",
-                    lazy: () => import("@/pages/InventoryCategoriesPage"),
-                  },
-                  {
-                    path: "/inventory/adjustments",
-                    lazy: () => import("@/pages/InventoryAdjustmentsPage"),
+                    path: "/inventory/products/:productId",
+                    lazy: () => import("@/pages/InventoryProductDetailPage"),
                   },
                 ],
               },
               {
-                path: "/inventory/products/new",
-                lazy: () => import("@/pages/InventoryAddProductPage"),
-              },
-              {
-                path: "/inventory/products/:productId",
-                lazy: () => import("@/pages/InventoryProductDetailPage"),
-              },
-              {
-                element: <OrdersLayout />,
+                element: <RequireModuleEnabled moduleKey="orders" />,
                 children: [
                   {
-                    path: "/orders",
-                    lazy: () => import("@/pages/OrdersOverviewPage"),
+                    element: <OrdersLayout />,
+                    children: [
+                      {
+                        path: "/orders",
+                        lazy: () => import("@/pages/OrdersOverviewPage"),
+                      },
+                      {
+                        path: "/orders/list",
+                        lazy: () => import("@/pages/OrdersListPage"),
+                      },
+                      {
+                        path: "/orders/customers",
+                        lazy: () => import("@/pages/OrdersCustomersPage"),
+                      },
+                    ],
                   },
                   {
-                    path: "/orders/list",
-                    lazy: () => import("@/pages/OrdersListPage"),
+                    path: "/orders/new",
+                    lazy: () => import("@/pages/CreateOrderPage"),
                   },
                   {
-                    path: "/orders/customers",
-                    lazy: () => import("@/pages/OrdersCustomersPage"),
+                    path: "/orders/:orderId",
+                    lazy: () => import("@/pages/OrderDetailPage"),
                   },
                 ],
               },
               {
-                path: "/orders/new",
-                lazy: () => import("@/pages/CreateOrderPage"),
-              },
-              {
-                path: "/orders/:orderId",
-                lazy: () => import("@/pages/OrderDetailPage"),
-              },
-              {
-                element: <CrmLayout />,
+                element: <RequireModuleEnabled moduleKey="crm" />,
                 children: [
                   {
-                    path: "/crm",
-                    lazy: () => import("@/pages/CrmOverviewPage"),
+                    element: <CrmLayout />,
+                    children: [
+                      {
+                        path: "/crm",
+                        lazy: () => import("@/pages/CrmOverviewPage"),
+                      },
+                      {
+                        path: "/crm/customers",
+                        lazy: () => import("@/pages/CrmCustomersPage"),
+                      },
+                    ],
                   },
                   {
-                    path: "/crm/customers",
-                    lazy: () => import("@/pages/CrmCustomersPage"),
+                    path: "/crm/customers/:customerId",
+                    lazy: () => import("@/pages/CrmCustomerDetailPage"),
                   },
                 ],
               },
               {
-                path: "/crm/customers/:customerId",
-                lazy: () => import("@/pages/CrmCustomerDetailPage"),
+                element: <RequireModuleEnabled moduleKey="bookings" />,
+                children: [
+                  {
+                    path: "/bookings",
+                    lazy: () => import("@/pages/BookingsOverviewPage"),
+                  },
+                ],
               },
               {
-                path: "/bookings",
-                lazy: () => import("@/pages/BookingsOverviewPage"),
+                element: <RequireModuleEnabled moduleKey="purchasing" />,
+                children: [
+                  {
+                    path: "/purchasing",
+                    lazy: () => import("@/pages/PurchasingOverviewPage"),
+                  },
+                  {
+                    path: "/purchasing/new",
+                    lazy: () => import("@/pages/CreatePurchaseOrderPage"),
+                  },
+                  {
+                    path: "/purchasing/:purchaseOrderId",
+                    lazy: () => import("@/pages/PurchaseOrderDetailPage"),
+                  },
+                ],
               },
               {
-                path: "/purchasing",
-                lazy: () => import("@/pages/PurchasingOverviewPage"),
+                element: <RequireModuleEnabled moduleKey="hr-staff" />,
+                children: [
+                  {
+                    path: "/hr-staff",
+                    lazy: () => import("@/pages/HrOverviewPage"),
+                  },
+                ],
               },
               {
-                path: "/purchasing/new",
-                lazy: () => import("@/pages/CreatePurchaseOrderPage"),
-              },
-              {
-                path: "/purchasing/:purchaseOrderId",
-                lazy: () => import("@/pages/PurchaseOrderDetailPage"),
-              },
-              {
-                path: "/hr-staff",
-                lazy: () => import("@/pages/HrOverviewPage"),
-              },
-              {
-                path: "/reports",
-                lazy: () => import("@/pages/ReportsOverviewPage"),
+                element: <RequireModuleEnabled moduleKey="reports" />,
+                children: [
+                  {
+                    path: "/reports",
+                    lazy: () => import("@/pages/ReportsOverviewPage"),
+                  },
+                ],
               },
               {
                 path: "/billing",
                 lazy: () => import("@/pages/BillingOverviewPage"),
               },
               {
-                path: "/ai-assistant",
-                lazy: () => import("@/pages/AiAssistantOverviewPage"),
+                element: <RequireModuleEnabled moduleKey="ai-assistant" />,
+                children: [
+                  {
+                    path: "/ai-assistant",
+                    lazy: () => import("@/pages/AiAssistantOverviewPage"),
+                  },
+                ],
               },
               {
                 element: <SettingsLayout />,
