@@ -2242,7 +2242,25 @@ export type Database = {
         Args: { p_flag_id: string; p_org_id: string }
         Returns: undefined
       }
+      platform_create_role: {
+        Args: { p_name: string; p_org_id: string; p_permission_ids: string[] }
+        Returns: {
+          created_at: string
+          id: string
+          is_system_role: boolean
+          name: string
+          org_id: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "roles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       platform_dashboard_stats: { Args: never; Returns: Json }
+      platform_grant_admin: { Args: { p_user_id: string }; Returns: undefined }
       platform_list_audit_logs: {
         Args: { p_limit?: number }
         Returns: {
@@ -2293,6 +2311,30 @@ export type Database = {
           status: string
         }[]
       }
+      platform_list_org_roles: {
+        Args: { p_org_id: string }
+        Returns: {
+          id: string
+          is_system_role: boolean
+          name: string
+          permission_ids: string[]
+        }[]
+      }
+      platform_list_permissions: {
+        Args: never
+        Returns: {
+          description: string | null
+          id: string
+          key: string
+          module_key: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "permissions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       platform_list_plans: {
         Args: never
         Returns: {
@@ -2312,12 +2354,32 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      platform_list_users: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_platform_admin: boolean
+          memberships: Json
+        }[]
+      }
       platform_restore_organization: {
         Args: { p_org_id: string }
         Returns: undefined
       }
+      platform_revoke_admin: { Args: { p_user_id: string }; Returns: undefined }
       platform_set_flag_default: {
         Args: { p_enabled: boolean; p_flag_id: string }
+        Returns: undefined
+      }
+      platform_set_member_status: {
+        Args: {
+          p_member_id: string
+          p_org_id: string
+          p_status: Database["public"]["Enums"]["member_status"]
+        }
         Returns: undefined
       }
       platform_set_org_flag_override: {
@@ -2333,6 +2395,10 @@ export type Database = {
       }
       platform_update_org_branding: {
         Args: { p_logo_url: string; p_org_id: string; p_primary_color: string }
+        Returns: undefined
+      }
+      platform_update_role_permissions: {
+        Args: { p_permission_ids: string[]; p_role_id: string }
         Returns: undefined
       }
       platform_update_subscription: {
