@@ -831,6 +831,59 @@ export type Database = {
         }
         Relationships: []
       }
+      files: {
+        Row: {
+          bucket: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          filename: string
+          folder: string
+          id: string
+          mime_type: string | null
+          org_id: string | null
+          path: string
+          size_bytes: number | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          bucket?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          filename: string
+          folder?: string
+          id?: string
+          mime_type?: string | null
+          org_id?: string | null
+          path: string
+          size_bytes?: number | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          bucket?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          filename?: string
+          folder?: string
+          id?: string
+          mime_type?: string | null
+          org_id?: string | null
+          path?: string
+          size_bytes?: number | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "files_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_transactions: {
         Row: {
           created_at: string

@@ -83,6 +83,10 @@ export const router = createBrowserRouter([
                 path: "/platform-admin/tickets/:ticketId",
                 lazy: () => import("@/pages/PlatformTicketDetailPage"),
               },
+              {
+                path: "/platform-admin/media",
+                lazy: () => import("@/pages/PlatformMediaLibraryPage"),
+              },
             ],
           },
         ],
