@@ -7,6 +7,14 @@ last_updated: 2026-08-25
 
 Each entry: context, decision, consequences. Add new ADRs at the top (most recent first).
 
+## ADR-005 — 2026-08-25: Scope Module Registry Phase 1 to schema + read API only, defer `router.tsx` refactor
+
+**Context**: [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) Phase 1 describes both adding a `modules` table and refactoring `src/router.tsx`'s hardcoded `RequireModuleEnabled moduleKey="..."` calls to read from it, calling the combination "pure plumbing" with "no user-facing behavior change." With zero automated test coverage in the repo (see [docs/11_TESTING/INDEX.md](../11_TESTING/INDEX.md)), a router refactor touching every tenant route's gating logic is a real-behavior-change risk that can't be verified except by hand, one route at a time.
+
+**Decision**: Ship the `modules` table, seed data, RPCs, and `src/core/modules/{api.ts,hooks.ts}` as one milestone. Explicitly do **not** touch `src/router.tsx` in this milestone — the registry exists as additive metadata only; gating continues to work exactly as before via `feature_flags`/`org_feature_flags`. Router consumption is deferred to Phase 4 (Navigation & Dashboard generation), where it was already scoped as its own phase.
+
+**Consequences**: Phase 1 is now lower-risk and independently shippable/revertible (drop the table, delete two files). The registry is not yet consumed by anything, so its value is latent until a later phase reads it — that's an acceptable tradeoff against the Incremental Delivery Rule in [AI_INSTRUCTIONS.md](AI_INSTRUCTIONS.md), which prioritizes one small verifiable milestone over a larger combined one.
+
 ## ADR-004 — 2026-08-25: Establish ADOS as the permanent engineering brain
 
 **Context**: Repository had grown to 20 shipped modules with no persistent documentation system; continuity across Claude sessions depended entirely on conversation history.

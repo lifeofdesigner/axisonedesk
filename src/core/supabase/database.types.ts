@@ -1070,6 +1070,60 @@ export type Database = {
         }
         Relationships: []
       }
+      modules: {
+        Row: {
+          category: string | null
+          created_at: string
+          dependencies: Json
+          description: string | null
+          display_order: number
+          enabled: boolean
+          feature_flag_key: string | null
+          icon: string | null
+          key: string
+          name: string
+          required_permissions: Json
+          route: string | null
+          subscription_requirement: string | null
+          supported_industries: Json
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          dependencies?: Json
+          description?: string | null
+          display_order?: number
+          enabled?: boolean
+          feature_flag_key?: string | null
+          icon?: string | null
+          key: string
+          name: string
+          required_permissions?: Json
+          route?: string | null
+          subscription_requirement?: string | null
+          supported_industries?: Json
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          dependencies?: Json
+          description?: string | null
+          display_order?: number
+          enabled?: boolean
+          feature_flag_key?: string | null
+          icon?: string | null
+          key?: string
+          name?: string
+          required_permissions?: Json
+          route?: string | null
+          subscription_requirement?: string | null
+          supported_industries?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       files: {
         Row: {
           bucket: string
@@ -3017,6 +3071,32 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      platform_list_modules: {
+        Args: never
+        Returns: {
+          category: string | null
+          created_at: string
+          dependencies: Json
+          description: string | null
+          display_order: number
+          enabled: boolean
+          feature_flag_key: string | null
+          icon: string | null
+          key: string
+          name: string
+          required_permissions: Json
+          route: string | null
+          subscription_requirement: string | null
+          supported_industries: Json
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "modules"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       platform_list_plans: {
         Args: never
         Returns: {
@@ -3286,6 +3366,46 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "invoices"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      platform_upsert_module: {
+        Args: {
+          p_category: string | null
+          p_dependencies: Json
+          p_description: string | null
+          p_display_order: number
+          p_enabled: boolean
+          p_feature_flag_key: string | null
+          p_icon: string | null
+          p_key: string
+          p_name: string
+          p_required_permissions: Json
+          p_route: string | null
+          p_subscription_requirement: string | null
+          p_supported_industries: Json
+        }
+        Returns: {
+          category: string | null
+          created_at: string
+          dependencies: Json
+          description: string | null
+          display_order: number
+          enabled: boolean
+          feature_flag_key: string | null
+          icon: string | null
+          key: string
+          name: string
+          required_permissions: Json
+          route: string | null
+          subscription_requirement: string | null
+          supported_industries: Json
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "modules"
           isOneToOne: true
           isSetofReturn: false
         }

@@ -55,5 +55,8 @@ Every `create or replace function` in `supabase/migrations/*.sql`, 2026-08-25. W
 ## CMS
 `platform_list_cms_pages()` · `platform_upsert_cms_page(...)` · `platform_delete_cms_page(p_id)` (`0025`)
 
+## Module Registry (written, not yet applied — see `docs/18_REFERENCE/MODULE_REGISTRY.md`)
+`platform_list_modules()` · `platform_upsert_module(...)` (`0026`)
+
 ## References
 [16_PLAYBOOKS/CREATE_SUPABASE_RPC.md](../16_PLAYBOOKS/CREATE_SUPABASE_RPC.md) · [docs/03_DATABASE/INDEX.md](../03_DATABASE/INDEX.md)

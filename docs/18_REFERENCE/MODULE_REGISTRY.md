@@ -1,11 +1,13 @@
 ---
-title: Module Registry (spec — not yet implemented)
+title: Module Registry
 last_updated: 2026-08-25
 ---
 
 # Module Registry
 
-**Does not exist as a table/system.** Today, "module" is an implicit concept spread across `src/router.tsx` (route + `RequireModuleEnabled moduleKey`), `feature_flags` (enable/disable), and each module's own `api.ts`/`hooks.ts`/components — there's no single table describing a module's metadata. Building this is [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) Phase 1.
+**Schema written, not yet applied to a live database.** `supabase/migrations/0026_module_registry.sql` defines a `modules` table (key, name, description, category, icon, route, dependencies, required_permissions, feature_flag_key, supported_industries, subscription_requirement, display_order, enabled) plus `platform_list_modules()`/`platform_upsert_module(...)` RPCs, seeded with the 12 real modules from [docs/04_MODULES/INDEX.md](../04_MODULES/INDEX.md), and `src/core/modules/{api.ts,hooks.ts}` to read it — see [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) Phase 1. This migration has **not been applied to any live Supabase project** as of 2026-08-25: this environment had no authenticated CLI access to the project `VITE_SUPABASE_URL` actually points at (not in the linked account's `supabase projects list`, and no local Docker-based Supabase instance running). Apply it and regenerate `database.types.ts` via the CLI when access is available, and verify the hand-authored type additions in this commit against the CLI's actual output.
+
+It is purely additive metadata — `RequireModuleEnabled`/`feature_flags`/`org_feature_flags` remain the actual on/off gating mechanism, unchanged. `src/router.tsx` has **not** been refactored to consume this registry (that was Phase 1's stretch goal per the playbook, deferred here as a separate risk-bearing change from adding the foundation table — see ADR in [docs/00_ADOS/DECISIONS.md](../00_ADOS/DECISIONS.md)).
 
 ## Current modules, described as the registry would once it exists
 

@@ -35,16 +35,16 @@ Status values: **Complete**, **In Progress**, **Planned**, **Blocked**, **Deferr
 | Developer Tools | Complete (registry only) | | platform_api_keys, platform_webhooks, platform_edge_functions | catalog table, not deployed Edge Functions |
 | CMS | Complete | | cms_pages | public legal/help/marketing pages |
 
-## Planned — Industry Module Engine (next major architectural milestone)
+## In Progress — Industry Module Engine (next major architectural milestone)
 
-Explicitly **not started**. Full implementation plan lives in [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md). Summary:
+Full implementation plan lives in [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md). Summary:
 
-- **Priority**: High (next milestone after ADOS).
+- **Priority**: High.
 - **Business value**: same codebase serves many industries without forks; config-driven onboarding, navigation, dashboards, AI behavior, roles.
 - **Dependencies**: Module Registry must exist before Industry Templates can reference it; Organization Type Library depends on Module Registry + Feature Flags (already shipped) + Subscription plan model (already shipped).
-- **Current status**: Planned. **Do not begin implementation without explicit instruction** (per current directive from 2026-08-25).
-- **Phases** (see playbook for detail): 1) Module Registry, 2) Industry/Org-Type Registry + Templates, 3) Onboarding wizard rewrite to apply templates, 4) Platform Owner Portal "Industries" management UI, 5) Navigation/Dashboard generation from registry, 6) AI behavior selection by industry, 7) Subscription-gated module unlocking.
-- **Risks**: touches onboarding (auth-adjacent, high blast radius), navigation (used by every route), and RBAC (default roles per template) — needs migration + rollback strategy per phase.
+- **Current status**: **Phase 1 (Module Registry) — schema/API written, not yet applied to a live database.** `modules` table, seed data (12 real modules), `platform_list_modules()`/`platform_upsert_module()` RPCs, and `src/core/modules/{api.ts,hooks.ts}` shipped in `supabase/migrations/0026_module_registry.sql` (2026-08-25). Not yet applied to any live Supabase project — see [docs/18_REFERENCE/MODULE_REGISTRY.md](../18_REFERENCE/MODULE_REGISTRY.md) for why (no authenticated CLI access to the actual project in this environment). `src/router.tsx` intentionally not yet refactored to consume it — see ADR-005 in [DECISIONS.md](DECISIONS.md). Per the Incremental Delivery Rule in [AI_INSTRUCTIONS.md](AI_INSTRUCTIONS.md), Phase 2 requires a fresh "Continue" instruction.
+- **Phases** (see playbook for detail): 1) Module Registry — **in progress**, 2) Industry/Org-Type Registry + Templates, 3) Onboarding wizard rewrite to apply templates, 4) Platform Owner Portal "Industries" management UI + Navigation/Dashboard generation from registry, 5) AI behavior selection by industry, 6) Subscription-gated module unlocking.
+- **Risks**: touches onboarding (auth-adjacent, high blast radius), navigation (used by every route), and RBAC (default roles per template) — needs migration + rollback strategy per phase. Phase 1 itself was scoped narrowly specifically to avoid these risks (see ADR-005).
 
 ## Planned — Workspace & Collaboration
 

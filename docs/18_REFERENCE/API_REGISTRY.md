@@ -18,6 +18,7 @@ AxisOneDesk has no custom REST/GraphQL API layer — data access is via Supabase
 | Billing | `src/modules/billing/api.ts` |
 | AI Assistant | `src/modules/ai-assistant/api.ts` |
 | Platform Admin (all 13 sections) | `src/core/platform-admin/<area>-api.ts` (24 files, api+hooks pairs) |
+| Module Registry (metadata, see [MODULE_REGISTRY.md](MODULE_REGISTRY.md)) | `src/core/modules/api.ts` — migration written, not yet applied to a live database |
 
 ## References
 [16_PLAYBOOKS/CREATE_API.md](../16_PLAYBOOKS/CREATE_API.md) · [RPC_REGISTRY.md](RPC_REGISTRY.md)

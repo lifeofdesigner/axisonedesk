@@ -9,22 +9,27 @@ last_updated: 2026-08-25
 
 ## Immediate: none in progress
 
-No implementation task is currently open. The active session established ADOS + the `.ai/` playbook system per explicit instruction, and was told to **stop after that commit and wait for further instructions** before starting the Industry Module Engine.
+Industry Module Engine Phase 1 (Module Registry) shipped its schema/API this session (`supabase/migrations/0026_module_registry.sql`, `src/core/modules/`) — see [ROADMAP.md](ROADMAP.md) "In Progress — Industry Module Engine" and ADR-005 in [DECISIONS.md](DECISIONS.md). Per the Incremental Delivery Rule in [AI_INSTRUCTIONS.md](AI_INSTRUCTIONS.md), the session stopped there rather than continuing into Phase 2.
+
+## Blocker to resolve before Phase 1 can be considered fully done
+
+Migration `0026_module_registry.sql` has **not been applied to any live Supabase database** — this environment has no authenticated CLI access to the project `VITE_SUPABASE_URL` actually points at. Before Phase 2 starts, someone with real DB access should:
+1. `supabase link` (or equivalent) to the actual project and `supabase db push` to apply `0026_module_registry.sql`.
+2. Run `supabase gen types typescript --linked` and diff the output against the hand-authored `modules`/`platform_list_modules`/`platform_upsert_module` type additions already in `database.types.ts` — reconcile any difference.
+3. Manually verify: `select * from modules order by display_order;` returns the 12 seeded rows, and `platform_upsert_module(...)` is callable by a platform admin and rejected for a non-admin.
 
 ## Recommended next task (awaiting go-ahead)
 
-**Industry Module Engine, Phase 1: Module Registry.**
+**Industry Module Engine, Phase 2: Industry/Org-Type Registry + Templates.**
 
-Rationale: every later phase (Industry Templates, Organization Type Library, template-driven onboarding, Platform Owner "Industries" management UI, navigation/dashboard generation) depends on a Module Registry existing first, since templates need something concrete to reference. Building the registry first also lets the existing hardcoded module list (currently just the `RequireModuleEnabled moduleKey="..."` calls in `src/router.tsx` + `feature_flags`/`org_feature_flags` tables) be migrated onto it without a second parallel system.
-
-See [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) for the full phased plan, migration strategy, and risks before starting.
-
-**Do not start this without explicit user instruction** — the user's directive for this session was audit + document + plan only.
+See [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) for the full plan — `organization_types` + `organization_type_modules` tables, seeded with system-default templates (Manufacturing, Retail, Restaurant, etc. — proposed defaults in [docs/18_REFERENCE/INDUSTRY_REGISTRY.md](../18_REFERENCE/INDUSTRY_REGISTRY.md)), plus a Platform Owner Portal "Industries" section. **Do not start without explicit instruction**, and resolve the migration-application blocker above first if possible.
 
 ## Other candidates, not prioritized
 
-- Stand up automated testing (currently zero coverage) — see [11_TESTING/INDEX.md](../11_TESTING/INDEX.md).
-- Stand up CI (currently none) — see [12_DEPLOYMENT/INDEX.md](../12_DEPLOYMENT/INDEX.md).
+- Resolve the Phase 1 migration-application blocker (see above) — arguably should happen before any further Industry Engine phases.
+- Stand up automated testing (currently zero coverage) — see [docs/11_TESTING/INDEX.md](../11_TESTING/INDEX.md).
+- Stand up CI (currently none) — see [docs/12_DEPLOYMENT/INDEX.md](../12_DEPLOYMENT/INDEX.md).
 - Build the client-side RBAC layer described in ARCHITECTURE.md but never implemented (`src/core/rbac/`).
-- Wire a real payment provider (Stripe is referenced in ARCHITECTURE.md, not implemented) — see [08_BILLING/INDEX.md](../08_BILLING/INDEX.md).
-- Wire a real LLM provider for the AI Assistant shell — see [06_AI/INDEX.md](../06_AI/INDEX.md).
+- Wire a real payment provider — see [docs/08_BILLING/INDEX.md](../08_BILLING/INDEX.md).
+- Wire a real LLM provider for the AI Assistant shell — see [docs/06_AI/INDEX.md](../06_AI/INDEX.md).
+- Enterprise Marketing Website — see [ROADMAP.md](ROADMAP.md), sequenced after Industry Module Engine Foundation.
