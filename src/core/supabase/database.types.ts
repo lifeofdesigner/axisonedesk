@@ -1124,6 +1124,81 @@ export type Database = {
         }
         Relationships: []
       }
+      organization_types: {
+        Row: {
+          archived_at: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          is_system_default: boolean
+          key: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          archived_at?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          is_system_default?: boolean
+          key: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          archived_at?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          is_system_default?: boolean
+          key?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      organization_type_modules: {
+        Row: {
+          default_enabled: boolean
+          is_hidden: boolean
+          is_optional: boolean
+          module_key: string
+          organization_type_key: string
+          updated_at: string
+        }
+        Insert: {
+          default_enabled?: boolean
+          is_hidden?: boolean
+          is_optional?: boolean
+          module_key: string
+          organization_type_key: string
+          updated_at?: string
+        }
+        Update: {
+          default_enabled?: boolean
+          is_hidden?: boolean
+          is_optional?: boolean
+          module_key?: string
+          organization_type_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_type_modules_module_key_fkey"
+            columns: ["module_key"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "organization_type_modules_organization_type_key_fkey"
+            columns: ["organization_type_key"]
+            isOneToOne: false
+            referencedRelation: "organization_types"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       files: {
         Row: {
           bucket: string
@@ -2926,6 +3001,10 @@ export type Database = {
         Args: { p_org_id: string }
         Returns: undefined
       }
+      platform_archive_organization_type: {
+        Args: { p_key: string }
+        Returns: undefined
+      }
       platform_clear_org_flag_override: {
         Args: { p_flag_id: string; p_org_id: string }
         Returns: undefined
@@ -3097,6 +3176,42 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      platform_list_organization_type_modules: {
+        Args: { p_organization_type_key: string }
+        Returns: {
+          default_enabled: boolean
+          is_hidden: boolean
+          is_optional: boolean
+          module_key: string
+          organization_type_key: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "organization_type_modules"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      platform_list_organization_types: {
+        Args: never
+        Returns: {
+          archived_at: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          is_system_default: boolean
+          key: string
+          name: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "organization_types"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       platform_list_plans: {
         Args: never
         Returns: {
@@ -3150,6 +3265,10 @@ export type Database = {
       }
       platform_restore_organization: {
         Args: { p_org_id: string }
+        Returns: undefined
+      }
+      platform_restore_organization_type: {
+        Args: { p_key: string }
         Returns: undefined
       }
       platform_revoke_admin: { Args: { p_user_id: string }; Returns: undefined }
@@ -3209,6 +3328,29 @@ export type Database = {
           p_status: Database["public"]["Enums"]["organization_status"]
         }
         Returns: undefined
+      }
+      platform_set_organization_type_module: {
+        Args: {
+          p_default_enabled: boolean
+          p_is_hidden: boolean
+          p_is_optional: boolean
+          p_module_key: string
+          p_organization_type_key: string
+        }
+        Returns: {
+          default_enabled: boolean
+          is_hidden: boolean
+          is_optional: boolean
+          module_key: string
+          organization_type_key: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "organization_type_modules"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       platform_system_health: {
         Args: never
@@ -3406,6 +3548,31 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "modules"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      platform_upsert_organization_type: {
+        Args: {
+          p_description: string | null
+          p_icon: string | null
+          p_is_system_default: boolean
+          p_key: string
+          p_name: string
+        }
+        Returns: {
+          archived_at: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          is_system_default: boolean
+          key: string
+          name: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "organization_types"
           isOneToOne: true
           isSetofReturn: false
         }

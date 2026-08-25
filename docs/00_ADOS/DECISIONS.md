@@ -7,6 +7,14 @@ last_updated: 2026-08-25
 
 Each entry: context, decision, consequences. Add new ADRs at the top (most recent first).
 
+## ADR-006 — 2026-08-25: Seed only the 14 system-default industry templates, not the full 29-item target list; don't touch `organizations`
+
+**Context**: [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) Phase 2 calls for an Industry/Org-Type Registry with a target list that includes both a "system-default" set (Manufacturing, Retail, etc. — 14 industries) and a broader "Platform Owner can create entirely new types" set (Law Firm, Church, NGO, etc. — 15 more, per the Organization Type Library concept). The 9 industries with the highest-confidence module mapping were already documented with proposed defaults in [docs/18_REFERENCE/INDUSTRY_REGISTRY.md](../18_REFERENCE/INDUSTRY_REGISTRY.md); the other 20 either lack a researched mapping or belong to the "created later without code changes" category by design.
+
+**Decision**: Migration `0027_industry_registry.sql` seeds only the 14 system-default templates, with module-default mappings only for the 9 already researched. It does not seed the remaining 15 org types (those are meant to be added later through the registry itself, once a Platform Owner Portal UI exists — that's the whole point of the Organization Type Library being code-change-free). It also does not add an `organization_type_key` column to `organizations` — no onboarding flow exists yet to populate it (that's Phase 3), so adding it now would be an unconsumed schema change.
+
+**Consequences**: Phase 2 stays scoped to "the registry and its seed data," matching Phase 1's precedent (ADR-005) of keeping each milestone narrow and independently revertible. Nothing outside this migration and `src/core/industries/` is affected. The registry has no consumers yet (same latent-value tradeoff as ADR-005) until Phase 3/4 build on it.
+
 ## ADR-005 — 2026-08-25: Scope Module Registry Phase 1 to schema + read API only, defer `router.tsx` refactor
 
 **Context**: [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md) Phase 1 describes both adding a `modules` table and refactoring `src/router.tsx`'s hardcoded `RequireModuleEnabled moduleKey="..."` calls to read from it, calling the combination "pure plumbing" with "no user-facing behavior change." With zero automated test coverage in the repo (see [docs/11_TESTING/INDEX.md](../11_TESTING/INDEX.md)), a router refactor touching every tenant route's gating logic is a real-behavior-change risk that can't be verified except by hand, one route at a time.

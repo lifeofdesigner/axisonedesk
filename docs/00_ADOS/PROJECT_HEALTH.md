@@ -29,7 +29,7 @@ Core multi-tenant ERP CRUD + Platform Owner Portal is solid and broad (20 module
 | Media Library | 85% | Functional file manager on existing bucket |
 | Support Center | 85% | Tickets + threads + internal notes |
 | CMS | 80% | Public page management |
-| Industry Module Engine | ~8% | Phase 1 (Module Registry) schema + read/write API written; **not applied to any live database** in this environment (no CLI DB access); `src/router.tsx` not yet wired to it; Phases 2-6 not started |
+| Industry Module Engine | ~15% | Phases 1-2 (Module Registry; Industry/Org-Type Registry + Templates) schema + read/write API written; **neither applied to any live database** in this environment (no CLI DB access, re-verified); `src/router.tsx` and `organizations` not yet wired to either; Phases 3-6 not started |
 | Workspace & Collaboration | 0% | Not started — planned |
 
 ## Documentation coverage: ~98% (of what exists)
@@ -66,10 +66,10 @@ Beyond production readiness gaps: no Industry Engine (every customer gets the sa
 
 ## Recommended focus, in order
 
-1. Apply migration `0026_module_registry.sql` to the live database and regenerate `database.types.ts` via CLI once DB access exists (closes the Phase 1 gap — see [NEXT_TASK.md](NEXT_TASK.md)).
+1. Apply migrations `0026_module_registry.sql` and `0027_industry_registry.sql` to the live database and regenerate `database.types.ts` via CLI once DB access exists (closes the Phase 1-2 gap — see [NEXT_TASK.md](NEXT_TASK.md)).
 2. Testing + CI (de-risks everything after it).
 3. Provider Management + one real payment provider (unblocks revenue).
-4. Industry Module Engine Phase 2 (Industry/Org-Type Registry + Templates) — see [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md).
+4. Industry Module Engine Phase 3 (onboarding wizard rewrite) — highest blast radius phase, build behind a flag — see [.ai/02_INDUSTRY_ENGINE.md](../../.ai/02_INDUSTRY_ENGINE.md).
 5. Enterprise Marketing Website — after Industry Module Engine Foundation, per [ROADMAP.md](ROADMAP.md).
 
 ## Engineering process maturity (new dimension, tracked from this session)
